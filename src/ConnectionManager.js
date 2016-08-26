@@ -21,6 +21,10 @@ export default class ConnectionManager {
 
     this.connection = new Connection(this.options)
 
+    this.connection.bind('open', () => {
+      this.updateState('connected')
+    })
+
     this.connection.bind('message', (message) => {
       this.emitter.emit('message', message)
     })

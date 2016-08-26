@@ -101,6 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.connection = new _ConnectionManager2.default(this.key, this.options);
 
 	    this.connection.bind('connected', function () {
+	      _this.subscribeAll();
 	      logger.info('Connected');
 	    });
 
@@ -156,6 +157,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      channel.subscribe();
 	    }
 	    return channel;
+	  };
+
+	  Gusher.prototype.subscribeAll = function subscribeAll() {
+	    var _this2 = this;
+
+	    this.channels.channels.forEach(function (_, channelName) {
+	      _this2.subscribe(channelName);
+	    });
 	  };
 
 	  Gusher.prototype.unsubscribe = function unsubscribe(channelName) {
@@ -561,14 +570,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Channels() {
 	    _classCallCheck(this, Channels);
 
-	    this.map = new Map();
+	    this.channels = new Map();
 	  }
 
 	  Channels.prototype.add = function add(name, gusher) {
-	    var channel = this.map.get(name);
+	    var channel = this.channels.get(name);
 	    if (!channel) {
 	      channel = new _Channel2.default(name, gusher);
-	      this.map.set(name, channel);
+	      this.channels.set(name, channel);
 	    }
 	    return channel;
 	  };
@@ -578,14 +587,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Channels.prototype.remove = function remove(name) {
-	    var channel = this.map.get(name);
-	    this.map.delete(name);
+	    var channel = this.channels.get(name);
+	    this.channels.delete(name);
 	    return channel;
 	  };
 
 	  Channels.prototype.all = function all() {
 	    var keys = [];
-	    for (var _iterator = this.map.keys(), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+	    for (var _iterator = this.channels.keys(), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
 	      var _ref;
 
 	      if (_isArray) {
@@ -605,7 +614,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Channels.prototype.disconnect = function disconnect() {
-	    this.map.forEach(function (channel) {
+	    this.channels.forEach(function (channel) {
 	      return channel.disconnect();
 	    });
 	  };
@@ -806,6 +815,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.emitter = new _events2.default();
 
 	    this.connection = new _Connection2.default(this.options);
+
+	    this.connection.bind('open', function () {
+	      _this.updateState('connected');
+	    });
 
 	    this.connection.bind('message', function (message) {
 	      _this.emitter.emit('message', message);
