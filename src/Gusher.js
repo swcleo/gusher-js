@@ -19,6 +19,7 @@ export default class Gusher {
     this.connection = new ConnectionManager(this.key, this.options)
 
     this.connection.bind('connected', () => {
+      this.subscribeAll()
       logger.info('Connected')
     })
 
@@ -74,6 +75,12 @@ export default class Gusher {
       channel.subscribe()
     }
     return channel
+  }
+
+  subscribeAll() {
+    this.channels.channels.forEach((_, channelName) => {
+      this.subscribe(channelName)
+    })
   }
 
   unsubscribe(channelName) {

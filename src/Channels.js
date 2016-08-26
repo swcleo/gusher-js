@@ -2,14 +2,14 @@ import Channel from './Channel'
 
 export default class Channels {
   constructor() {
-    this.map = new Map()
+    this.channels = new Map()
   }
 
   add(name, gusher) {
-    let channel = this.map.get(name)
+    let channel = this.channels.get(name)
     if (!channel) {
       channel = new Channel(name, gusher)
-      this.map.set(name, channel)
+      this.channels.set(name, channel)
     }
     return channel
   }
@@ -19,20 +19,20 @@ export default class Channels {
   }
 
   remove(name) {
-    let channel = this.map.get(name)
-    this.map.delete(name)
+    let channel = this.channels.get(name)
+    this.channels.delete(name)
     return channel
   }
 
   all() {
     let keys = []
-    for (let key of this.map.keys()) {
+    for (let key of this.channels.keys()) {
       keys.push(key)
     }
     return keys
   }
 
   disconnect() {
-    this.map.forEach((channel) => channel.disconnect())
+    this.channels.forEach((channel) => channel.disconnect())
   }
 }
