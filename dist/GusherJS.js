@@ -62,24 +62,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _events2 = _interopRequireDefault(_events);
 
-	var _log4jsFree = __webpack_require__(6);
-
-	var _log4jsFree2 = _interopRequireDefault(_log4jsFree);
-
-	var _ConnectionManager = __webpack_require__(5);
+	var _ConnectionManager = __webpack_require__(6);
 
 	var _ConnectionManager2 = _interopRequireDefault(_ConnectionManager);
 
-	var _Channels = __webpack_require__(3);
+	var _Channels = __webpack_require__(4);
 
 	var _Channels2 = _interopRequireDefault(_Channels);
+
+	var _Logger = __webpack_require__(2);
+
+	var _Logger2 = _interopRequireDefault(_Logger);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var logger = _log4jsFree2.default.getLogger('Gusher');
-	logger.setLevel('DEBUG');
 
 	var Gusher = function () {
 	  function Gusher() {
@@ -94,6 +91,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.options = options;
 
+	    if (options.level) {
+	      _Logger2.default.setLevel(options.level);
+	    }
+
 	    this.emitter = new _events2.default();
 
 	    this.channels = new _Channels2.default();
@@ -102,7 +103,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.connection.bind('connected', function () {
 	      _this.subscribeAll();
-	      logger.info('Connected');
 	    });
 
 	    this.connection.bind('message', function (params) {
@@ -121,7 +121,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.connection.bind('error', function (err) {
-	      logger.warn('Error', err);
+	      _Logger2.default.warn('Error', err);
 	    });
 	  }
 
@@ -500,6 +500,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
+	var _log4jsFree = __webpack_require__(7);
+
+	var _log4jsFree2 = _interopRequireDefault(_log4jsFree);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _log4jsFree2.default.getLogger('Gusher');
+	module.exports = exports['default'];
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+
 	var _events = __webpack_require__(1);
 
 	var _events2 = _interopRequireDefault(_events);
@@ -536,12 +553,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
+	  Channel.prototype.handleEvent = function handleEvent() {
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    console.log(args);
+	  };
+
 	  Channel.prototype.subscribe = function subscribe() {
-	    this.gusher.send('gusher:subscribe', { channel: this.name });
+	    this.gusher.send('gusher.subscribe', { id: 'todo', channel: this.name });
 	  };
 
 	  Channel.prototype.unsubscribe = function unsubscribe() {
-	    this.gusher.send('gusher:unsubscribe', { channel: this.name });
+	    this.gusher.send('gusher.unsubscribe', { id: 'todo', channel: this.name });
 	  };
 
 	  return Channel;
@@ -551,14 +576,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Channel = __webpack_require__(2);
+	var _Channel = __webpack_require__(3);
 
 	var _Channel2 = _interopRequireDefault(_Channel);
 
@@ -626,7 +651,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -636,6 +661,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _events = __webpack_require__(1);
 
 	var _events2 = _interopRequireDefault(_events);
+
+	var _Logger = __webpack_require__(2);
+
+	var _Logger2 = _interopRequireDefault(_Logger);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -676,13 +705,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    try {
 	      this.socket = new WebSocket(this.url);
-	      this.changeState('connecting');
 	    } catch (e) {
 	      return false;
 	    }
 
 	    this.bindListeners();
 
+	    _Logger2.default.debug('Connecting', { url: this.url });
+	    this.changeState('connecting');
 	    return true;
 	  };
 
@@ -753,14 +783,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.socket = null;
 	  };
 
-	  Connection.prototype.onMessage = function onMessage(message) {
-	    this.emitter.emit('message', message);
+	  Connection.prototype.onMessage = function onMessage(event) {
+	    var message = void 0;
+	    try {
+	      message = JSON.parse(event.data);
+	    } catch (e) {
+	      _Logger2.default.error({ error: e });
+	      this.emitter('error', { error: e });
+	      return;
+	    }
+
+	    if (message) {
+	      _Logger2.default.debug('Event recd', message);
+	      this.emitter.emit('message', message);
+	    }
 	  };
 
-	  Connection.prototype.send = function send(event, data) {
-	    if (this.socket) {
-	      this.socket.send(event, data);
+	  Connection.prototype.send = function send(event, data, channel) {
+	    var message = { event: event, data: data };
+
+	    if (this.channel) {
+	      message.channel = channel;
 	    }
+
+	    _Logger2.default.debug('Event sent', message);
+	    this.socket.send(JSON.stringify(message));
 	  };
 
 	  return Connection;
@@ -770,7 +817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -781,9 +828,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _events2 = _interopRequireDefault(_events);
 
-	var _Connection = __webpack_require__(4);
+	var _Connection = __webpack_require__(5);
 
 	var _Connection2 = _interopRequireDefault(_Connection);
+
+	var _Logger = __webpack_require__(2);
+
+	var _Logger2 = _interopRequireDefault(_Logger);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -858,11 +909,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var previousState = this.state;
 	    this.state = newState;
 	    if (previousState !== newState) {
+	      _Logger2.default.debug('State changed', previousState + ' -> ' + newState);
 	      this.emitter.emit('state_change', {
 	        previous: previousState,
 	        current: newState
 	      });
 	      this.emitter.emit(newState, data);
+	    }
+	  };
+
+	  ConnectionManager.prototype.send = function send(event, data, channel) {
+	    if (this.connection) {
+	      return this.connection.send(event, data, channel);
+	    } else {
+	      return false;
 	    }
 	  };
 
@@ -873,7 +933,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	!function(t,e){ true?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.Log4js=e():t.Log4js=e()}(this,function(){return function(t){function e(n){if(o[n])return o[n].exports;var r=o[n]={exports:{},id:n,loaded:!1};return t[n].call(r.exports,r,r.exports,e),r.loaded=!0,r.exports}var o={};return e.m=t,e.c=o,e.p="",e(0)}([function(t,e,o){"use strict";function n(t){return t&&t.__esModule?t:{"default":t}}function r(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}e.__esModule=!0;var i=o(1),f=n(i),a=function(){function t(){r(this,t)}return t.prototype.getLogger=function(t){var e=new f["default"](t);return e},t}();e["default"]=new a,t.exports=e["default"]},function(t,e){"use strict";function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function n(t){return"string"==typeof t}function r(t,e){var o=""+t;return o.length>=e?o:r("0"+o,e)}function i(){var t=new Date;return t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()+" "+r(t.getHours(),2)+":"+r(t.getMinutes(),2)+":"+r(t.getSeconds(),2)+":"+t.getMilliseconds()}e.__esModule=!0;var f=e.LEVEL_MAP={DEBUG:1,INFO:2,WARN:3,ERROR:4,FATAL:5},a=e.LEVEL_KEY={1:"DEBUG",2:"INFO",3:"WARN",4:"ERROR",5:"FATAL"},u=function(){function t(){var e=arguments.length<=0||void 0===arguments[0]?"LOG":arguments[0],n=arguments.length<=1||void 0===arguments[1]?{}:arguments[1];o(this,t),this.name=e,this.level=f[n.level]||f.INFO}return t.prototype.setLevel=function(t){f[t]&&(this.level=f[t])},t.prototype.debug=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.DEBUG,t,o)}},t.prototype.info=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.INFO,t,o)}},t.prototype.warn=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.WARN,t,o)}},t.prototype.error=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.ERROR,t,o)}},t.prototype.fatal=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.FATAL,t,o)}},t.prototype.write=function(t,e,o){if(t>=this.level&&n(e)){var r=console[a[t].toLowerCase()]?console[a[t].toLowerCase()]:console.log;r.apply(void 0,["["+i()+"] ["+a[t]+"] "+this.name+" - "+e].concat(o))}},t}();e["default"]=u}])});

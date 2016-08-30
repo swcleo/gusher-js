@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import Connection from './Connection'
+import Logger from './Logger'
 
 /**
  * ConnectionManager states:
@@ -63,11 +64,20 @@ export default class ConnectionManager {
     let previousState = this.state
     this.state = newState
     if (previousState !== newState) {
+      Logger.debug('State changed', previousState + ' -> ' + newState)
       this.emitter.emit('state_change', {
         previous: previousState,
         current: newState
       })
       this.emitter.emit(newState, data)
+    }
+  }
+
+  send(event, data, channel) {
+    if (this.connection) {
+      return this.connection.send(event, data, channel)
+    } else {
+      return false
     }
   }
 

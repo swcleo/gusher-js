@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import Logger from './Logger'
 
 /**
  * state:
@@ -31,13 +32,14 @@ export default class Connection {
 
     try {
       this.socket = new WebSocket(this.url)
-      this.changeState('connecting')
     } catch (e) {
       return false
     }
 
     this.bindListeners()
 
+    Logger.debug('Connecting', { url: this.url })
+    this.changeState('connecting')
     return true
   }
 
@@ -106,13 +108,30 @@ export default class Connection {
     this.socket = null
   }
 
-  onMessage(message) {
-    this.emitter.emit('message', message)
+  onMessage(event) {
+    let message
+    try {
+      message = JSON.parse(event.data)
+    } catch (e) {
+      Logger.error({ error: e })
+      this.emitter('error', { error: e })
+      return
+    }
+
+    if (message) {
+      Logger.debug('Event recd', message)
+      this.emitter.emit('message', message)
+    }
   }
 
-  send(event, data) {
-    if (this.socket) {
-      this.socket.send(event, data)
+  send(event, data, channel) {
+    let message = { event, data }
+
+    if (this.channel) {
+      message.channel = channel
     }
+
+    Logger.debug('Event sent', message)
+    this.socket.send(JSON.stringify(message))
   }
 }

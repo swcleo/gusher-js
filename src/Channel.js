@@ -26,11 +26,15 @@ export default class Channel {
     return this
   }
 
+  handleEvent(...args) {
+    console.log(args)
+  }
+
   subscribe() {
-    this.gusher.send('gusher:subscribe', { channel: this.name })
+    this.gusher.send('gusher.subscribe', { id: 'todo', channel: this.name })
   }
 
   unsubscribe() {
-    this.gusher.send('gusher:unsubscribe', { channel: this.name })
+    this.gusher.send('gusher.unsubscribe', { id: 'todo', channel: this.name })
   }
 }

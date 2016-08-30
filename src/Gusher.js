@@ -1,16 +1,17 @@
 import EventEmitter from 'events'
-import Log4js from 'log4js-free'
 import ConnectionManager from './ConnectionManager'
 import Channels from './Channels'
-
-let logger = Log4js.getLogger('Gusher')
-logger.setLevel('DEBUG')
+import Logger from './Logger'
 
 export default class Gusher {
   constructor(appKey = '', options = {}) {
     this.key = appKey
 
     this.options = options
+
+    if (options.level) {
+      Logger.setLevel(options.level)
+    }
 
     this.emitter = new EventEmitter()
 
@@ -20,7 +21,6 @@ export default class Gusher {
 
     this.connection.bind('connected', () => {
       this.subscribeAll()
-      logger.info('Connected')
     })
 
     this.connection.bind('message', (params) => {
@@ -39,7 +39,7 @@ export default class Gusher {
     })
 
     this.connection.bind('error', (err) => {
-      logger.warn('Error', err)
+      Logger.warn('Error', err)
     })
   }
 
