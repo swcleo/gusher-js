@@ -26,8 +26,12 @@ export default class Channel {
     return this
   }
 
-  handleEvent(...args) {
-    console.log(args)
+  handleEvent(event, data) {
+    if (event === "subscribe_succeeded") {
+      this.subscribed = true;
+    }
+
+    this.emitter.emit(event, data)
   }
 
   subscribe() {

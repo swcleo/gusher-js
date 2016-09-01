@@ -553,12 +553,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
-	  Channel.prototype.handleEvent = function handleEvent() {
-	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	      args[_key] = arguments[_key];
+	  Channel.prototype.handleEvent = function handleEvent(event, data) {
+	    if (event === "subscribe_succeeded") {
+	      this.subscribed = true;
 	    }
 
-	    console.log(args);
+	    this.emitter.emit(event, data);
 	  };
 
 	  Channel.prototype.subscribe = function subscribe() {
