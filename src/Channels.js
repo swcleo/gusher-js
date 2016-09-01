@@ -15,7 +15,7 @@ export default class Channels {
   }
 
   find(name) {
-    return this.map.get(name)
+    return this.channels.get(name)
   }
 
   remove(name) {

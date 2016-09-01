@@ -608,7 +608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Channels.prototype.find = function find(name) {
-	    return this.map.get(name);
+	    return this.channels.get(name);
 	  };
 
 	  Channels.prototype.remove = function remove(name) {
