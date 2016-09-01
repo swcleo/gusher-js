@@ -10,11 +10,18 @@
 </head>
 <body>
 
-<script>
-    let gusher = new Gusher('xxx', { url: 'ws://127.0.0.1:8000/ws/TEST?auth=test', level: 'DEBUG' })
-    gusher.connect()
-</script>
+<p>
+    <img src="post_event.png" width="70%" alt="post_event">
+</p>
 
+<script>
+    const gusher = new Gusher('xxx', { url: 'ws://127.0.0.1:8000/ws/TEST?auth=test', level: 'DEBUG' })
+    gusher.connect()
+    const channel = gusher.subscribe('AM')
+    channel.bind('test', (data) => {
+        console.log('Received from channel: ', data)
+    })
+</script>
 
 </body>
 </html>
