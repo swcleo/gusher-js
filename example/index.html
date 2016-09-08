@@ -22,7 +22,7 @@
     gusher.bind('*', (data) => {
         console.log('Received from global: ', data)
     })
-    
+
     const channel = gusher.subscribe('AM')
 
     channel.bind('test', (data) => {

@@ -1,5 +1,5 @@
 # gusher-js
-> 
+> gusher client tool 
 
 
 ## Getting Started
@@ -12,13 +12,13 @@ npm install gusher-js --save
 
 ### Usage
 ```
-const gusher = new Gusher('APP_KEY', { url: 'ws://127.0.0.1:8000/ws/TEST?auth=test', level: 'DEBUG' })
+const gusher = new Gusher({APP_KEY}', { url: 'ws://{HOST_URL}/ws/{APP_KEY}?auth={AUTH_DATA}', level: {DEBUG|INFO|WARN|ERROR|FATAL} })
 
 gusher.connect()
 
-const channel = gusher.subscribe('AM')
+const channel = gusher.subscribe('AM') // `AM` is channel name
 
-channel.bind('test', (data) => {
+channel.bind('test', (data) => {            // `test` is evnet name
   console.log('Received from channel: ', data)
 })
 ```
