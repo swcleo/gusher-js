@@ -31,10 +31,11 @@ export default class ConnectionManager {
     })
 
     this.connection.bind('error', (err) => {
-      this.emitter.emit('error', {
-        type: 'WebSocketError',
-        error: err
-      })
+      this.updateState('error', err)
+    })
+
+    this.connection.bind('closed', (evt) => {
+      this.updateState('closed', evt)
     })
 
     this.connect()

@@ -39,7 +39,7 @@ export default class Gusher {
     })
 
     this.connection.bind('error', (err) => {
-      Logger.warn('Error', err)
+      Logger.error('Error', err)
     })
   }
 
@@ -56,7 +56,7 @@ export default class Gusher {
   }
 
   disconnect() {
-    this.connect().disconnect()
+    this.connection.disconnect()
   }
 
   bind(event, callback) {

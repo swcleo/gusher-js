@@ -121,7 +121,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.connection.bind('error', function (err) {
-	      _Logger2.default.warn('Error', err);
+	      _Logger2.default.error('Error', err);
 	    });
 	  }
 
@@ -138,7 +138,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Gusher.prototype.disconnect = function disconnect() {
-	    this.connect().disconnect();
+	    this.connection.disconnect();
 	  };
 
 	  Gusher.prototype.bind = function bind(event, callback) {
@@ -699,7 +699,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Connection.prototype.connect = function connect() {
-	    if (this.socket || this.state !== 'initialized') {
+	    if (this.socket) {
 	      return false;
 	    }
 
@@ -876,10 +876,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.connection.bind('error', function (err) {
-	      _this.emitter.emit('error', {
-	        type: 'WebSocketError',
-	        error: err
-	      });
+	      _this.updateState('error', err);
+	    });
+
+	    this.connection.bind('closed', function (evt) {
+	      _this.updateState('closed', evt);
 	    });
 
 	    this.connect();

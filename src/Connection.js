@@ -26,7 +26,7 @@ export default class Connection {
   }
 
   connect() {
-    if (this.socket || this.state !== 'initialized') {
+    if (this.socket) {
       return false
     }
 
