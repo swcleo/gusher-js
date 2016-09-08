@@ -127,7 +127,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.connection.bind('retry', function () {
-	      _Logger2.default.error('Error', err);
 	      _this.emitter.emit('retry');
 	    });
 	  }
