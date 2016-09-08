@@ -32,6 +32,8 @@ export default class Gusher {
       }
 
       this.emitter.emit(params.event, params.data)
+
+      this.emitter.emit('*', params)
     })
 
     this.connection.bind('disconnected', () => {

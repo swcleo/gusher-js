@@ -18,7 +18,13 @@
 <script>
     const gusher = new Gusher('xxx', { url: 'ws://127.0.0.1:8000/ws/TEST?auth=test', level: 'DEBUG' })
     gusher.connect()
+
+    gusher.bind('*', (data) => {
+        console.log('Received from global: ', data)
+    })
+    
     const channel = gusher.subscribe('AM')
+
     channel.bind('test', (data) => {
         console.log('Received from channel: ', data)
     })

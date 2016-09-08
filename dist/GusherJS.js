@@ -114,6 +114,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      _this.emitter.emit(params.event, params.data);
+
+	      _this.emitter.emit('*', params);
 	    });
 
 	    this.connection.bind('disconnected', function () {
