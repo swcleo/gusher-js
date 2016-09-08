@@ -43,6 +43,11 @@ export default class Gusher {
     this.connection.bind('error', (err) => {
       Logger.error('Error', err)
     })
+
+    this.connection.bind('retry', () => {
+      Logger.error('Error', err)
+      this.emitter.emit('retry')
+    })
   }
 
   channel(name) {

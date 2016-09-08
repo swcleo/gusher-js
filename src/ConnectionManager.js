@@ -64,7 +64,7 @@ export default class ConnectionManager {
         this.retryNum++
         Logger.debug('Reconnect attempts: ', this.retryNum)
         this.connect()
-        this.retryTimer = null
+        this.emitter.emit('retry')
       }, delay)
     }
   }

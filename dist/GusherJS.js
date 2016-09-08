@@ -125,6 +125,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.connection.bind('error', function (err) {
 	      _Logger2.default.error('Error', err);
 	    });
+
+	    this.connection.bind('retry', function () {
+	      _Logger2.default.error('Error', err);
+	      _this.emitter.emit('retry');
+	    });
 	  }
 
 	  Gusher.prototype.channel = function channel(name) {
@@ -915,7 +920,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this2.retryNum++;
 	        _Logger2.default.debug('Reconnect attempts: ', _this2.retryNum);
 	        _this2.connect();
-	        _this2.retryTimer = null;
+	        _this2.emitter.emit('retry');
 	      }, delay);
 	    }
 	  };
