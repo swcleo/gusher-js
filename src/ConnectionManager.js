@@ -20,9 +20,25 @@ export default class ConnectionManager {
 
     this.emitter = new EventEmitter()
 
+    this.reconnection = options.reconnection || true
+
+    this.reconnectionDelay = options.reconnectionDelay || 1000
+
+    this.skipReconnect = false
+
+    this.retryNum = 0
+
+    this.retryTimer = null
+
     this.connection = new Connection(this.options)
 
     this.connection.bind('open', () => {
+      if (this.retryTimer) {
+        clearTimeout(this.retryTimer)
+        this.retryNum = 0
+        this.retryTimer = null
+      }
+      this.skipReconnect = false
       this.updateState('connected')
     })
 
@@ -36,9 +52,21 @@ export default class ConnectionManager {
 
     this.connection.bind('closed', (evt) => {
       this.updateState('closed', evt)
+      this.retryIn(this.reconnectionDelay)
     })
 
     this.connect()
+  }
+
+  retryIn(delay = 0) {
+    if (this.reconnection && !this.skipReconnect) {
+      this.retryTimer = setTimeout(() => {
+        this.retryNum++
+        Logger.debug('Reconnect attempts: ', this.retryNum)
+        this.connect()
+        this.retryTimer = null
+      }, delay)
+    }
   }
 
   bind(event, callback) {
@@ -57,6 +85,7 @@ export default class ConnectionManager {
   }
 
   disconnect() {
+    this.skipReconnect = true
     this.connection.close()
     this.updateState('disconnected')
   }

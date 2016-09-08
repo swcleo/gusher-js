@@ -865,9 +865,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.emitter = new _events2.default();
 
+	    this.reconnection = options.reconnection || true;
+
+	    this.reconnectionDelay = options.reconnectionDelay || 1000;
+
+	    this.skipReconnect = false;
+
+	    this.retryNum = 0;
+
+	    this.retryTimer = null;
+
 	    this.connection = new _Connection2.default(this.options);
 
 	    this.connection.bind('open', function () {
+	      if (_this.retryTimer) {
+	        clearTimeout(_this.retryTimer);
+	        _this.retryNum = 0;
+	        _this.retryTimer = null;
+	      }
+	      _this.skipReconnect = false;
 	      _this.updateState('connected');
 	    });
 
@@ -881,10 +897,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.connection.bind('closed', function (evt) {
 	      _this.updateState('closed', evt);
+	      _this.retryIn(_this.reconnectionDelay);
 	    });
 
 	    this.connect();
 	  }
+
+	  ConnectionManager.prototype.retryIn = function retryIn() {
+	    var _this2 = this;
+
+	    var delay = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+	    if (this.reconnection && !this.skipReconnect) {
+	      this.retryTimer = setTimeout(function () {
+	        _this2.retryNum++;
+	        _Logger2.default.debug('Reconnect attempts: ', _this2.retryNum);
+	        _this2.connect();
+	        _this2.retryTimer = null;
+	      }, delay);
+	    }
+	  };
 
 	  ConnectionManager.prototype.bind = function bind(event, callback) {
 	    this.emitter.on(event, callback);
@@ -902,6 +934,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  ConnectionManager.prototype.disconnect = function disconnect() {
+	    this.skipReconnect = true;
 	    this.connection.close();
 	    this.updateState('disconnected');
 	  };
