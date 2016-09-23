@@ -16,10 +16,12 @@
 </p>
 
 <script>
-    const gusher = new Gusher('xxx', {
-        url: 'ws://127.0.0.1:8000/ws/TEST?auth=test',
+    const jwtToken = ''
+
+    const gusher = new Gusher('APP_KEY', {
+        url: 'ws://127.0.0.1:8000/ws/APP_KEY',
         level: 'DEBUG',
-        token: 'jwt'
+        token: jwtToken
     })
 
     gusher.connect()
