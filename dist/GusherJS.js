@@ -913,8 +913,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this.updateState('closed', evt);
 	      _this.retryIn(_this.reconnectionDelay);
 	    });
-
-	    this.connect();
 	  }
 
 	  ConnectionManager.prototype.retryIn = function retryIn() {

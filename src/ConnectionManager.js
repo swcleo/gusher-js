@@ -59,8 +59,6 @@ export default class ConnectionManager {
       this.updateState('closed', evt)
       this.retryIn(this.reconnectionDelay)
     })
-
-    this.connect()
   }
 
   retryIn(delay = 0) {
