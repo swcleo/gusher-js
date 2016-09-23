@@ -30,9 +30,9 @@
         console.log('Received from global: ', data)
     })
 
-    const channel = gusher.subscribe('AM')
+    const channel = gusher.subscribe('channel_name')
 
-    channel.bind('test', (data) => {
+    channel.bind('event_name', (data) => {
         console.log('Received from channel: ', data)
     })
 </script>
