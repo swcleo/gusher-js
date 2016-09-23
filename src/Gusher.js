@@ -9,6 +9,10 @@ export default class Gusher {
 
     this.options = options
 
+    if (!this.options.token) {
+      throw new Error('Authenticate Error: JWT(JSON Web Token) is not defined')
+    }
+
     if (options.level) {
       Logger.setLevel(options.level)
     }

@@ -91,6 +91,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.options = options;
 
+	    if (!this.options.token) {
+	      throw new Error('Authenticate Error: JWT(JSON Web Token) is not defined');
+	    }
+
 	    if (options.level) {
 	      _Logger2.default.setLevel(options.level);
 	    }
