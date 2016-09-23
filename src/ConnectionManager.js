@@ -39,11 +39,12 @@ export default class ConnectionManager {
         this.retryTimer = null
       }
       this.skipReconnect = false
-      this.updateState('connected')
-
       if (this.options && this.options.token) {
-        this.send('gusher.login', { jwt: this.options.token })
+        this.send('gusher.login', {
+          jwt: this.options.token
+        })
       }
+      this.updateState('connected')
     })
 
     this.connection.bind('message', (message) => {

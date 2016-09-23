@@ -813,6 +813,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      message.channel = channel;
 	    }
 
+	    console.log(JSON.stringify(message));
+
 	    _Logger2.default.debug('Event sent', message);
 	    this.socket.send(JSON.stringify(message));
 	  };
@@ -891,11 +893,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.retryTimer = null;
 	      }
 	      _this.skipReconnect = false;
-	      _this.updateState('connected');
-
 	      if (_this.options && _this.options.token) {
-	        _this.send('gusher.login', { jwt: _this.options.token });
+	        _this.send('gusher.login', {
+	          jwt: _this.options.token
+	        });
 	      }
+	      _this.updateState('connected');
 	    });
 
 	    this.connection.bind('message', function (message) {
