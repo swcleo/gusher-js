@@ -10,6 +10,7 @@ import Logger from './Logger'
  */
 export default class Connection {
   constructor(options = {}) {
+    this.options = options || {}
     this.url = options.url || ''
     this.state = 'initialized'
     this.emitter = new EventEmitter()

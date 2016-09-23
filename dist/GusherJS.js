@@ -689,6 +689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _classCallCheck(this, Connection);
 
+	    this.options = options || {};
 	    this.url = options.url || '';
 	    this.state = 'initialized';
 	    this.emitter = new _events2.default();
@@ -891,6 +892,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      _this.skipReconnect = false;
 	      _this.updateState('connected');
+
+	      if (_this.options && _this.options.token) {
+	        _this.send('gusher.login', { jwt: _this.options.token });
+	      }
 	    });
 
 	    this.connection.bind('message', function (message) {

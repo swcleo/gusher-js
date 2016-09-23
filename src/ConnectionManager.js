@@ -40,6 +40,10 @@ export default class ConnectionManager {
       }
       this.skipReconnect = false
       this.updateState('connected')
+
+      if (this.options && this.options.token) {
+        this.send('gusher.login', { jwt: this.options.token })
+      }
     })
 
     this.connection.bind('message', (message) => {
