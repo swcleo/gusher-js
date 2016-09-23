@@ -12,15 +12,16 @@ npm install gusher-js --save
 
 ### Usage
 ```
-const gusher = new Gusher({APP_KEY}', { url: 'ws://{HOST_URL}/ws/{APP_KEY}?auth={AUTH_DATA}', level: {DEBUG|INFO|WARN|ERROR|FATAL} })
+const gusher = new Gusher({APP_KEY}', { url: 'ws://{HOST_URL}/ws/{APP_KEY}', level: {DEBUG|INFO|WARN|ERROR|FATAL} })
 
 gusher.connect()
 
-const channel = gusher.subscribe('AM') // `AM` is channel name
+const channel = gusher.subscribe('channel_name')
 
-channel.bind('test', (data) => {            // `test` is evnet name
+channel.bind('event_name', (data) => {
   console.log('Received from channel: ', data)
 })
+
 ```
 
 ## Getting To Know Gusher
