@@ -1,5 +1,5 @@
 # gusher-js
-> gusher client tool 
+gusher client tool 
 
 
 ## Getting Started
@@ -12,7 +12,11 @@ npm install gusher-js --save
 
 ### Usage
 ```
-const gusher = new Gusher({APP_KEY}', { url: 'ws://{HOST_URL}/ws/{APP_KEY}', level: {DEBUG|INFO|WARN|ERROR|FATAL} })
+const gusher = new Gusher({ANY_NAME || APP_KEY}', {
+    url: 'ws://{HOST_URL}/ws/{APP_KEY}',
+    token: 'JWT_TOKEN',
+    level: {DEBUG|INFO|WARN|ERROR|FATAL} 
+})  
 
 gusher.connect()
 
