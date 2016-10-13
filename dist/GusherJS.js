@@ -817,9 +817,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      message.channel = channel;
 	    }
 
-	    console.log(JSON.stringify(message));
-
 	    _Logger2.default.debug('Event sent', message);
+
 	    this.socket.send(JSON.stringify(message));
 	  };
 
