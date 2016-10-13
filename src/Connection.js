@@ -106,6 +106,7 @@ export default class Connection {
     }
 
     this.unbindListeners()
+
     this.socket = null
   }
 

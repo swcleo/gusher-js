@@ -22,7 +22,7 @@ export default class ConnectionManager {
 
     this.reconnection = options.reconnection || true
 
-    this.reconnectionDelay = options.reconnectionDelay || 1000
+    this.reconnectionDelay = options.reconnectionDelay || 3000
 
     this.skipReconnect = false
 
@@ -38,7 +38,9 @@ export default class ConnectionManager {
         this.retryNum = 0
         this.retryTimer = null
       }
+
       this.skipReconnect = false
+
       if (this.options && this.options.token) {
         this.send('gusher.login', {
           jwt: this.options.token
