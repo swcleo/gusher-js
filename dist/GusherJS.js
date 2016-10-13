@@ -791,6 +791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    this.unbindListeners();
+
 	    this.socket = null;
 	  };
 
@@ -879,7 +880,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.reconnection = options.reconnection || true;
 
-	    this.reconnectionDelay = options.reconnectionDelay || 1000;
+	    this.reconnectionDelay = options.reconnectionDelay || 3000;
 
 	    this.skipReconnect = false;
 
@@ -895,7 +896,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.retryNum = 0;
 	        _this.retryTimer = null;
 	      }
+
 	      _this.skipReconnect = false;
+
 	      if (_this.options && _this.options.token) {
 	        _this.send('gusher.login', {
 	          jwt: _this.options.token
