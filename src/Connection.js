@@ -132,9 +132,8 @@ export default class Connection {
       message.channel = channel
     }
 
-    console.log(JSON.stringify(message))
-
     Logger.debug('Event sent', message)
+
     this.socket.send(JSON.stringify(message))
   }
 }
