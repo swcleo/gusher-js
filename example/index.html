@@ -30,7 +30,13 @@
         console.log('Received from global: ', data)
     })
 
-    const channel = gusher.subscribe('channel_name')
+    // @closed is a session closed event,
+    // you can use for handle connect disconnect state on client
+    gusher.bind('@closed', (e) => {
+        console.log('@closed:', e)
+    })
+
+    const channel = gusher.subscribe('domain')
 
     channel.bind('event_name', (data) => {
         console.log('Received from channel: ', data)

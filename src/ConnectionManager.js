@@ -28,11 +28,15 @@ export default class ConnectionManager {
 
     this.retryNum = 0
 
+    this.connectionStartTimestamp = 0
+
     this.retryTimer = null
 
     this.connection = new Connection(this.options)
 
     this.connection.bind('open', () => {
+      this.connectionStartTimestamp = Date.now()
+
       if (this.retryTimer) {
         clearTimeout(this.retryTimer)
         this.retryNum = 0
@@ -58,6 +62,14 @@ export default class ConnectionManager {
     })
 
     this.connection.bind('closed', (evt) => {
+      const sessionTime = Date.now() - this.connectionStartTimestamp
+
+      if (sessionTime > 0 && this.connectionStartTimestamp !== 0) {
+        this.emitter.emit('@closed', Object.assign({}, evt, { session_time: sessionTime }))
+        Logger.debug(`Session Time: ${sessionTime} ms`)
+        this.connectionStartTimestamp = 0
+      }
+
       this.updateState('closed', evt)
       this.retryIn(this.reconnectionDelay)
     })

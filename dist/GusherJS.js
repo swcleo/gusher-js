@@ -126,6 +126,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this.channels.disconnect();
 	    });
 
+	    // 有實際連線成功後的中斷事件
+	    this.connection.bind('@closed', function (evt) {
+	      _this.emitter.emit('@closed', evt);
+	    });
+
+	    this.connection.bind('closed', function (evt) {
+	      _this.emitter.emit('closed', evt);
+	    });
+
 	    this.connection.bind('error', function (err) {
 	      _Logger2.default.error('Error', err);
 	    });
@@ -886,11 +895,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.retryNum = 0;
 
+	    this.connectionStartTimestamp = 0;
+
 	    this.retryTimer = null;
 
 	    this.connection = new _Connection2.default(this.options);
 
 	    this.connection.bind('open', function () {
+	      _this.connectionStartTimestamp = Date.now();
+
 	      if (_this.retryTimer) {
 	        clearTimeout(_this.retryTimer);
 	        _this.retryNum = 0;
@@ -916,6 +929,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.connection.bind('closed', function (evt) {
+	      var sessionTime = Date.now() - _this.connectionStartTimestamp;
+
+	      if (sessionTime > 0 && _this.connectionStartTimestamp !== 0) {
+	        _this.emitter.emit('@closed', Object.assign({}, evt, { session_time: sessionTime }));
+	        _Logger2.default.debug('Session Time: ' + sessionTime + ' ms');
+	        _this.connectionStartTimestamp = 0;
+	      }
+
 	      _this.updateState('closed', evt);
 	      _this.retryIn(_this.reconnectionDelay);
 	    });

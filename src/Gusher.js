@@ -44,6 +44,15 @@ export default class Gusher {
       this.channels.disconnect()
     })
 
+    // session close event
+    this.connection.bind('@closed', (evt) => {
+      this.emitter.emit('@closed', evt)
+    })
+
+    this.connection.bind('closed', (evt) => {
+      this.emitter.emit('closed', evt)
+    })
+
     this.connection.bind('error', (err) => {
       Logger.error('Error', err)
     })
