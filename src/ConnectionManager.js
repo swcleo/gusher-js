@@ -50,6 +50,7 @@ export default class ConnectionManager {
           jwt: this.options.token
         })
       }
+
       this.updateState('connected')
     })
 

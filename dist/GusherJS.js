@@ -107,6 +107,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.connection.bind('connected', function () {
 	      _this.subscribeAll();
+	      _this.emitter.emit('connected');
 	    });
 
 	    this.connection.bind('message', function (params) {
@@ -124,9 +125,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.connection.bind('disconnected', function () {
 	      _this.channels.disconnect();
+	      _this.emitter.emit('disconnected');
 	    });
 
-	    // 有實際連線成功後的中斷事件
+	    // session close event
 	    this.connection.bind('@closed', function (evt) {
 	      _this.emitter.emit('@closed', evt);
 	    });
@@ -136,6 +138,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.connection.bind('error', function (err) {
+	      _this.emitter.emit('error', err);
 	      _Logger2.default.error('Error', err);
 	    });
 
@@ -917,6 +920,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          jwt: _this.options.token
 	        });
 	      }
+
 	      _this.updateState('connected');
 	    });
 

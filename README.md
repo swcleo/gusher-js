@@ -28,6 +28,13 @@ channel.bind('event_name', (data) => {
 
 ```
 
+## Events
+* \*
+* connected  
+* disconnected
+* closed  
+* @closed
+
 ## Getting To Know Gusher
 Gusher is a WebSocket server.  
 

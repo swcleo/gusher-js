@@ -25,6 +25,7 @@ export default class Gusher {
 
     this.connection.bind('connected', () => {
       this.subscribeAll()
+      this.emitter.emit('connected')
     })
 
     this.connection.bind('message', (params) => {
@@ -42,6 +43,7 @@ export default class Gusher {
 
     this.connection.bind('disconnected', () => {
       this.channels.disconnect()
+      this.emitter.emit('disconnected')
     })
 
     // session close event
@@ -54,6 +56,7 @@ export default class Gusher {
     })
 
     this.connection.bind('error', (err) => {
+      this.emitter.emit('error', err)
       Logger.error('Error', err)
     })
 
