@@ -46,6 +46,14 @@ export default class Gusher {
       this.emitter.emit('disconnected')
     })
 
+    this.connection.bind('retry', (evt) => {
+      this.emitter.emit('retry', evt)
+    })
+
+    this.connection.bind('retryMax', () => {
+      this.emitter.emit('retryMax')
+    })
+
     // session close event
     this.connection.bind('@closed', (evt) => {
       this.emitter.emit('@closed', evt)
@@ -56,12 +64,7 @@ export default class Gusher {
     })
 
     this.connection.bind('error', (err) => {
-      this.emitter.emit('error', err)
       Logger.error('Error', err)
-    })
-
-    this.connection.bind('retry', () => {
-      this.emitter.emit('retry')
     })
   }
 

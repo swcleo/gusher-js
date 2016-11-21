@@ -24,10 +24,33 @@
         token: jwtToken
     })
 
+    // other gusher options
+    // ----------------------
+    // reconnection: Boolean,
+    // retryMax: Number
+    // reconnectionDelay: Number
+
     gusher.connect()
 
     gusher.bind('*', (data) => {
         console.log('Received from global: ', data)
+    })
+
+    gusher.bind('connected', () => {
+        console.log('connected')
+    })
+
+    gusher.bind('closed', () => {
+        console.log('closed')
+    })
+
+    gusher.bind('retry', (e) => {
+      console.log('retry', e)
+    })
+
+    // gusher.options retryMax
+    gusher.bind('retryMax', () => {
+      console.log('retryMax')
     })
 
     // @closed is a session closed event,

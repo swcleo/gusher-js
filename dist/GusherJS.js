@@ -128,6 +128,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this.emitter.emit('disconnected');
 	    });
 
+	    this.connection.bind('retry', function (evt) {
+	      _this.emitter.emit('retry', evt);
+	    });
+
+	    this.connection.bind('retryMax', function () {
+	      _this.emitter.emit('retryMax');
+	    });
+
 	    // session close event
 	    this.connection.bind('@closed', function (evt) {
 	      _this.emitter.emit('@closed', evt);
@@ -138,12 +146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.connection.bind('error', function (err) {
-	      _this.emitter.emit('error', err);
 	      _Logger2.default.error('Error', err);
-	    });
-
-	    this.connection.bind('retry', function () {
-	      _this.emitter.emit('retry');
 	    });
 	  }
 
@@ -890,9 +893,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.emitter = new _events2.default();
 
-	    this.reconnection = options.reconnection || true;
+	    this.reconnection = options.reconnection === undefined ? true : options.reconnection;
 
-	    this.reconnectionDelay = options.reconnectionDelay || 3000;
+	    this.reconnectionDelay = options.reconnectionDelay === undefined ? 3000 : options.reconnectionDelay;
+
+	    this.retryMax = options.retryMax === undefined ? Number.MAX_SAFE_INTEGER : options.retryMax;
 
 	    this.skipReconnect = false;
 
@@ -942,6 +947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      _this.updateState('closed', evt);
+
 	      _this.retryIn(_this.reconnectionDelay);
 	    });
 	  }
@@ -951,12 +957,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var delay = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
+	    if (this.retryNum >= this.retryMax) {
+	      this.disconnect();
+	      this.emitter.emit('retryMax');
+	      _Logger2.default.debug('Reconnect Max: ', this.retryNum);
+	    }
+
 	    if (this.reconnection && !this.skipReconnect) {
 	      this.retryTimer = setTimeout(function () {
 	        _this2.retryNum++;
 	        _Logger2.default.debug('Reconnect attempts: ', _this2.retryNum);
 	        _this2.connect();
-	        _this2.emitter.emit('retry');
+	        _this2.emitter.emit('retry', { retry: _this2.retryNum });
 	      }, delay);
 	    }
 	  };
@@ -973,6 +985,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  ConnectionManager.prototype.connect = function connect() {
 	    this.updateState('connecting');
+	    this.skipReconnect = false;
 	    this.connection.connect();
 	  };
 

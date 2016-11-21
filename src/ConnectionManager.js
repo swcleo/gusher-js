@@ -20,9 +20,11 @@ export default class ConnectionManager {
 
     this.emitter = new EventEmitter()
 
-    this.reconnection = options.reconnection || true
+    this.reconnection = options.reconnection === undefined ? true : options.reconnection
 
-    this.reconnectionDelay = options.reconnectionDelay || 3000
+    this.reconnectionDelay = options.reconnectionDelay === undefined ? 3000 : options.reconnectionDelay
+
+    this.retryMax = options.retryMax === undefined ? Number.MAX_SAFE_INTEGER : options.retryMax
 
     this.skipReconnect = false
 
@@ -72,17 +74,24 @@ export default class ConnectionManager {
       }
 
       this.updateState('closed', evt)
+
       this.retryIn(this.reconnectionDelay)
     })
   }
 
   retryIn(delay = 0) {
+    if (this.retryNum >= this.retryMax) {
+      this.disconnect()
+      this.emitter.emit('retryMax')
+      Logger.debug('Reconnect Max: ', this.retryNum)
+    }
+
     if (this.reconnection && !this.skipReconnect) {
       this.retryTimer = setTimeout(() => {
         this.retryNum++
         Logger.debug('Reconnect attempts: ', this.retryNum)
         this.connect()
-        this.emitter.emit('retry')
+        this.emitter.emit('retry', { retry: this.retryNum })
       }, delay)
     }
   }
@@ -99,6 +108,7 @@ export default class ConnectionManager {
 
   connect() {
     this.updateState('connecting')
+    this.skipReconnect = false
     this.connection.connect()
   }
 
