@@ -47,12 +47,6 @@ export default class ConnectionManager {
 
       this.skipReconnect = false
 
-      if (this.options && this.options.token) {
-        this.send('gusher.login', {
-          jwt: this.options.token
-        })
-      }
-
       this.updateState('connected')
     })
 
@@ -106,10 +100,47 @@ export default class ConnectionManager {
     return this
   }
 
+  unBindAll(...evt) {
+    this.emitter.removeAllListeners(evt)
+  }
+
   connect() {
+    if (!this.options.auth || !this.options.jwt) {
+      return
+    }
     this.updateState('connecting')
     this.skipReconnect = false
-    this.connection.connect()
+
+    const http = new XMLHttpRequest()
+
+    const data = `jwt=${this.options.jwt}`
+
+    http.open('POST', this.options.auth, true)
+
+    http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+
+    http.onreadystatechange = () => {
+      if(http.readyState === 4) {
+        if (http.status === 200) {
+          try {
+            const response = JSON.parse(http.responseText )
+            this.connection.connect(response.token)
+          } catch (e) {
+            Logger.error('Auth', { responseText: http.responseText })
+          }
+        }
+
+        Logger.debug('Auth', {
+          auth: this.options.auth,
+          jwt: this.options.jwt,
+          readyState: http.readyState,
+          status: http.status,
+          responseText: http.responseText
+        })
+      }
+    }
+
+    http.send(data)
   }
 
   disconnect() {

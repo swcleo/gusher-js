@@ -80,8 +80,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Gusher = function () {
 	  function Gusher() {
-	    var _this = this;
-
 	    var appKey = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
 	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -91,8 +89,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.options = options;
 
-	    if (!this.options.token) {
+	    if (!this.options.jwt) {
 	      throw new Error('Authenticate Error: JWT(JSON Web Token) is not defined');
+	    }
+
+	    if (!this.options.auth) {
+	      throw new Error('Authenticate Error: API authentication is not defined');
 	    }
 
 	    if (options.level) {
@@ -103,14 +105,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.channels = new _Channels2.default();
 
-	    this.connection = new _ConnectionManager2.default(this.key, this.options);
+	    this.connection = this.createConnection();
+	  }
 
-	    this.connection.bind('connected', function () {
+	  Gusher.prototype.getAuthToken = function getAuthToken() {
+	    return this.options.jwt;
+	  };
+
+	  Gusher.prototype.setAuthToken = function setAuthToken(jwt) {
+	    if (!jwt) {
+	      return;
+	    }
+
+	    this.options.jwt = jwt;
+	    this.connection.unBindAll();
+	    this.connection.disconnect();
+	    this.connection = new _ConnectionManager2.default(this.key, this.options);
+	    this.connection.connect();
+	  };
+
+	  Gusher.prototype.createConnection = function createConnection() {
+	    var _this = this;
+
+	    var connection = new _ConnectionManager2.default(this.key, this.options);
+
+	    connection.bind('connected', function () {
 	      _this.subscribeAll();
 	      _this.emitter.emit('connected');
 	    });
 
-	    this.connection.bind('message', function (params) {
+	    connection.bind('message', function (params) {
 	      if (params.channel) {
 	        var channel = _this.channel(params.channel);
 	        if (channel) {
@@ -123,32 +147,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this.emitter.emit('*', params);
 	    });
 
-	    this.connection.bind('disconnected', function () {
+	    connection.bind('disconnected', function () {
 	      _this.channels.disconnect();
 	      _this.emitter.emit('disconnected');
 	    });
 
-	    this.connection.bind('retry', function (evt) {
+	    connection.bind('retry', function (evt) {
 	      _this.emitter.emit('retry', evt);
 	    });
 
-	    this.connection.bind('retryMax', function () {
+	    connection.bind('retryMax', function () {
 	      _this.emitter.emit('retryMax');
 	    });
 
 	    // session close event
-	    this.connection.bind('@closed', function (evt) {
+	    connection.bind('@closed', function (evt) {
 	      _this.emitter.emit('@closed', evt);
 	    });
 
-	    this.connection.bind('closed', function (evt) {
+	    connection.bind('closed', function (evt) {
 	      _this.emitter.emit('closed', evt);
 	    });
 
-	    this.connection.bind('error', function (err) {
+	    connection.bind('error', function (err) {
 	      _Logger2.default.error('Error', err);
 	    });
-	  }
+
+	    return connection;
+	  };
 
 	  Gusher.prototype.channel = function channel(name) {
 	    return this.channels.find(name);
@@ -724,20 +750,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
-	  Connection.prototype.connect = function connect() {
-	    if (this.socket) {
+	  Connection.prototype.connect = function connect(token) {
+	    if (this.socket || !token) {
 	      return false;
 	    }
 
 	    try {
-	      this.socket = new WebSocket(this.url);
+	      this.socket = new WebSocket(this.url + '?token=' + token);
 	    } catch (e) {
 	      return false;
 	    }
 
 	    this.bindListeners();
 
-	    _Logger2.default.debug('Connecting', { url: this.url });
+	    _Logger2.default.debug('Connecting', { url: this.url, token: token });
+
 	    this.changeState('connecting');
 	    return true;
 	  };
@@ -920,12 +947,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      _this.skipReconnect = false;
 
-	      if (_this.options && _this.options.token) {
-	        _this.send('gusher.login', {
-	          jwt: _this.options.token
-	        });
-	      }
-
 	      _this.updateState('connected');
 	    });
 
@@ -983,10 +1004,53 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
+	  ConnectionManager.prototype.unBindAll = function unBindAll() {
+	    for (var _len = arguments.length, evt = Array(_len), _key = 0; _key < _len; _key++) {
+	      evt[_key] = arguments[_key];
+	    }
+
+	    this.emitter.removeAllListeners(evt);
+	  };
+
 	  ConnectionManager.prototype.connect = function connect() {
+	    var _this3 = this;
+
+	    if (!this.options.auth || !this.options.jwt) {
+	      return;
+	    }
 	    this.updateState('connecting');
 	    this.skipReconnect = false;
-	    this.connection.connect();
+
+	    var http = new XMLHttpRequest();
+
+	    var data = 'jwt=' + this.options.jwt;
+
+	    http.open('POST', this.options.auth, true);
+
+	    http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+	    http.onreadystatechange = function () {
+	      if (http.readyState === 4) {
+	        if (http.status === 200) {
+	          try {
+	            var response = JSON.parse(http.responseText);
+	            _this3.connection.connect(response.token);
+	          } catch (e) {
+	            _Logger2.default.error('Auth', { responseText: http.responseText });
+	          }
+	        }
+
+	        _Logger2.default.debug('Auth', {
+	          auth: _this3.options.auth,
+	          jwt: _this3.options.jwt,
+	          readyState: http.readyState,
+	          status: http.status,
+	          responseText: http.responseText
+	        });
+	      }
+	    };
+
+	    http.send(data);
 	  };
 
 	  ConnectionManager.prototype.disconnect = function disconnect() {

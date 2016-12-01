@@ -9,9 +9,14 @@ export default class Gusher {
 
     this.options = options
 
-    if (!this.options.token) {
+    if (!this.options.jwt) {
       throw new Error('Authenticate Error: JWT(JSON Web Token) is not defined')
     }
+
+    if (!this.options.auth) {
+      throw new Error('Authenticate Error: API authentication is not defined')
+    }
+
 
     if (options.level) {
       Logger.setLevel(options.level)
@@ -21,14 +26,34 @@ export default class Gusher {
 
     this.channels = new Channels()
 
-    this.connection = new ConnectionManager(this.key, this.options)
+    this.connection = this.createConnection()
+  }
 
-    this.connection.bind('connected', () => {
+  getAuthToken() {
+    return this.options.jwt
+  }
+
+  setAuthToken(jwt) {
+    if (!jwt) {
+      return
+    }
+
+    this.options.jwt = jwt
+    this.connection.unBindAll()
+    this.connection.disconnect()
+    this.connection = new ConnectionManager(this.key, this.options)
+    this.connection.connect()
+  }
+
+  createConnection() {
+    const connection = new ConnectionManager(this.key, this.options)
+
+    connection.bind('connected', () => {
       this.subscribeAll()
       this.emitter.emit('connected')
     })
 
-    this.connection.bind('message', (params) => {
+    connection.bind('message', (params) => {
       if (params.channel) {
         let channel = this.channel(params.channel)
         if (channel) {
@@ -41,31 +66,33 @@ export default class Gusher {
       this.emitter.emit('*', params)
     })
 
-    this.connection.bind('disconnected', () => {
+    connection.bind('disconnected', () => {
       this.channels.disconnect()
       this.emitter.emit('disconnected')
     })
 
-    this.connection.bind('retry', (evt) => {
+    connection.bind('retry', (evt) => {
       this.emitter.emit('retry', evt)
     })
 
-    this.connection.bind('retryMax', () => {
+    connection.bind('retryMax', () => {
       this.emitter.emit('retryMax')
     })
 
     // session close event
-    this.connection.bind('@closed', (evt) => {
+    connection.bind('@closed', (evt) => {
       this.emitter.emit('@closed', evt)
     })
 
-    this.connection.bind('closed', (evt) => {
+    connection.bind('closed', (evt) => {
       this.emitter.emit('closed', evt)
     })
 
-    this.connection.bind('error', (err) => {
+    connection.bind('error', (err) => {
       Logger.error('Error', err)
     })
+
+    return connection
   }
 
   channel(name) {

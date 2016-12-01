@@ -1,27 +1,30 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>gusher-js</title>
-    <script src="GusherJS.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>gusher-js</title>
+  <script src="GusherJS.js"></script>
 </head>
+
 <body>
 
-<p>
-<h3>postman</h3>
-<img src="post_event.png" width="50%" alt="post_event">
-</p>
+  <p>
+    <h3>Postman</h3>
+    <img src="post_event.png" width="50%" alt="post_event">
+  </p>
 
-<script>
-    const jwtToken = ''
+  <script>
+    const jwt =''
 
-    const gusher = new Gusher('APP_KEY', {
-        url: 'ws://127.0.0.1:8000/ws/APP_KEY',
-        level: 'DEBUG',
-        token: jwtToken
+    const gusher = new Gusher('{APP_KEY}', {
+      auth: 'http://{DOMAIN}}/{PREFIX}/auth',
+      url: 'ws://{DOMAIN}/{PREFIX}/{APP_KEY}',
+      jwt: '{JWT}',
+      level: 'DEBUG',
+      reconnection: false
     })
 
     // other gusher options
@@ -33,15 +36,15 @@
     gusher.connect()
 
     gusher.bind('*', (data) => {
-        console.log('Received from global: ', data)
+      console.log('Received from global: ', data)
     })
 
     gusher.bind('connected', () => {
-        console.log('connected')
+      console.log('connected')
     })
 
     gusher.bind('closed', () => {
-        console.log('closed')
+      console.log('closed')
     })
 
     gusher.bind('retry', (e) => {
@@ -56,15 +59,16 @@
     // @closed is a session closed event,
     // you can use for handle connect disconnect state on client
     gusher.bind('@closed', (e) => {
-        console.log('@closed:', e)
+      console.log('@closed:', e)
     })
 
     const channel = gusher.subscribe('domain')
 
     channel.bind('event_name', (data) => {
-        console.log('Received from channel: ', data)
+      console.log('Received from channel: ', data)
     })
-</script>
+  </script>
 
 </body>
+
 </html>

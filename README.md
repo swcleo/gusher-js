@@ -1,5 +1,5 @@
 # gusher-js
-gusher client tool 
+gusher client tool
 
 
 ## Getting Started
@@ -12,11 +12,12 @@ npm install gusher-js --save
 
 ### Usage
 ```
+
 const gusher = new Gusher({ANY_NAME || APP_KEY}', {
     url: 'ws://{HOST_URL}/ws/{APP_KEY}',
-    token: 'JWT_TOKEN',
-    level: {DEBUG|INFO|WARN|ERROR|FATAL} 
-})  
+    jwt: 'JWT_TOKEN',
+    level: {DEBUG}
+})
 
 gusher.connect()
 
@@ -27,12 +28,20 @@ channel.bind('event_name', (data) => {
 })
 
 ```
+## Gusher Options
+* url: websocket connect url
+* jwt: JWT(JSON Web Token)
+* reconnection auto reconnect default: true
+* retryMaxL: retry number default: Number.MAX_SAFE_INTEGER
+* reconnectionDelay: retry delay (ms)   default: 3000
+* level: debug logger {'DEBUG'|'INFO'|'WARN'|'ERROR'|'FATAL'}
+
 
 ## Events
 * \*
-* connected  
+* connected
 * disconnected
-* closed  
+* closed
 * @closed
 
 ## Getting To Know Gusher
@@ -76,4 +85,3 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
-

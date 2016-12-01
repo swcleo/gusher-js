@@ -26,20 +26,21 @@ export default class Connection {
     return this
   }
 
-  connect() {
-    if (this.socket) {
+  connect(token) {
+    if (this.socket || !token) {
       return false
     }
 
     try {
-      this.socket = new WebSocket(this.url)
+      this.socket = new WebSocket(`${this.url}?token=${token}`)
     } catch (e) {
       return false
     }
 
     this.bindListeners()
 
-    Logger.debug('Connecting', { url: this.url })
+    Logger.debug('Connecting', { url: this.url, token })
+
     this.changeState('connecting')
     return true
   }
