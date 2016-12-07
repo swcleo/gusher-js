@@ -80,8 +80,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Gusher = function () {
 	  function Gusher() {
-	    var appKey = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	    var appKey = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	    _classCallCheck(this, Gusher);
 
@@ -605,7 +605,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Channel.prototype.handleEvent = function handleEvent(event, data) {
-	    if (event === "subscribe_succeeded") {
+	    if (event === 'subscribe_succeeded') {
 	      this.subscribed = true;
 	    }
 
@@ -640,7 +640,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /* eslint no-restricted-syntax: 0 */
+
 
 	var Channels = function () {
 	  function Channels() {
@@ -730,7 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var Connection = function () {
 	  function Connection() {
-	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	    _classCallCheck(this, Connection);
 
@@ -907,8 +908,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function ConnectionManager() {
 	    var _this = this;
 
-	    var key = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	    var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	    _classCallCheck(this, ConnectionManager);
 
@@ -976,7 +977,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ConnectionManager.prototype.retryIn = function retryIn() {
 	    var _this2 = this;
 
-	    var delay = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	    var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
 	    if (this.retryNum >= this.retryMax) {
 	      this.disconnect();
@@ -986,7 +987,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    if (this.reconnection && !this.skipReconnect) {
 	      this.retryTimer = setTimeout(function () {
-	        _this2.retryNum++;
+	        _this2.retryNum += 1;
 	        _Logger2.default.debug('Reconnect attempts: ', _this2.retryNum);
 	        _this2.connect();
 	        _this2.emitter.emit('retry', { retry: _this2.retryNum });
@@ -1063,7 +1064,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var previousState = this.state;
 	    this.state = newState;
 	    if (previousState !== newState) {
-	      _Logger2.default.debug('State changed', previousState + ' -> ' + newState);
+	      _Logger2.default.debug('State changed', '\'' + previousState + '\' -> \'' + newState + '\'');
 	      this.emitter.emit('state_change', {
 	        previous: previousState,
 	        current: newState
@@ -1075,9 +1076,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ConnectionManager.prototype.send = function send(event, data, channel) {
 	    if (this.connection) {
 	      return this.connection.send(event, data, channel);
-	    } else {
-	      return false;
 	    }
+
+	    return false;
 	  };
 
 	  return ConnectionManager;
@@ -1088,9 +1089,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	!function(t,e){ true?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.Log4js=e():t.Log4js=e()}(this,function(){return function(t){function e(n){if(o[n])return o[n].exports;var r=o[n]={exports:{},id:n,loaded:!1};return t[n].call(r.exports,r,r.exports,e),r.loaded=!0,r.exports}var o={};return e.m=t,e.c=o,e.p="",e(0)}([function(t,e,o){"use strict";function n(t){return t&&t.__esModule?t:{"default":t}}function r(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}e.__esModule=!0;var i=o(1),f=n(i),a=function(){function t(){r(this,t)}return t.prototype.getLogger=function(t){var e=new f["default"](t);return e},t}();e["default"]=new a,t.exports=e["default"]},function(t,e){"use strict";function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function n(t){return"string"==typeof t}function r(t,e){var o=""+t;return o.length>=e?o:r("0"+o,e)}function i(){var t=new Date;return t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()+" "+r(t.getHours(),2)+":"+r(t.getMinutes(),2)+":"+r(t.getSeconds(),2)+":"+t.getMilliseconds()}e.__esModule=!0;var f=e.LEVEL_MAP={DEBUG:1,INFO:2,WARN:3,ERROR:4,FATAL:5},a=e.LEVEL_KEY={1:"DEBUG",2:"INFO",3:"WARN",4:"ERROR",5:"FATAL"},u=function(){function t(){var e=arguments.length<=0||void 0===arguments[0]?"LOG":arguments[0],n=arguments.length<=1||void 0===arguments[1]?{}:arguments[1];o(this,t),this.name=e,this.level=f[n.level]||f.INFO}return t.prototype.setLevel=function(t){f[t]&&(this.level=f[t])},t.prototype.debug=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.DEBUG,t,o)}},t.prototype.info=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.INFO,t,o)}},t.prototype.warn=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.WARN,t,o)}},t.prototype.error=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.ERROR,t,o)}},t.prototype.fatal=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.FATAL,t,o)}},t.prototype.write=function(t,e,o){if(t>=this.level&&n(e)){var r=console[a[t].toLowerCase()]?console[a[t].toLowerCase()]:console.log;r.apply(void 0,["["+i()+"] ["+a[t]+"] "+this.name+" - "+e].concat(o))}},t}();e["default"]=u}])});
+	!function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.Log4js=e():t.Log4js=e()}(this,function(){return function(t){function e(n){if(o[n])return o[n].exports;var r=o[n]={exports:{},id:n,loaded:!1};return t[n].call(r.exports,r,r.exports,e),r.loaded=!0,r.exports}var o={};return e.m=t,e.c=o,e.p="",e(0)}([function(t,e,o){"use strict";function n(t){return t&&t.__esModule?t:{"default":t}}function r(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}e.__esModule=!0;var i=o(1),f=n(i),a=function(){function t(){r(this,t)}return t.prototype.getLogger=function(t){var e=new f["default"](t);return e},t}();e["default"]=new a,t.exports=e["default"]},function(t,e){"use strict";function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function n(t){return"string"==typeof t}function r(t,e){var o=""+t;return o.length>=e?o:r("0"+o,e)}function i(){var t=new Date;return t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()+" "+r(t.getHours(),2)+":"+r(t.getMinutes(),2)+":"+r(t.getSeconds(),2)+":"+t.getMilliseconds()}e.__esModule=!0;var f=e.LEVEL_MAP={DEBUG:1,INFO:2,WARN:3,ERROR:4,FATAL:5},a=e.LEVEL_KEY={1:"DEBUG",2:"INFO",3:"WARN",4:"ERROR",5:"FATAL"},u=function(){function t(){var e=arguments.length<=0||void 0===arguments[0]?"LOG":arguments[0],n=arguments.length<=1||void 0===arguments[1]?{}:arguments[1];o(this,t),this.name=e,this.level=f[n.level]||f.INFO}return t.prototype.setLevel=function(t){f[t]&&(this.level=f[t])},t.prototype.debug=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.DEBUG,t,o)}},t.prototype.info=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.INFO,t,o)}},t.prototype.warn=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.WARN,t,o)}},t.prototype.error=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.ERROR,t,o)}},t.prototype.fatal=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.FATAL,t,o)}},t.prototype.write=function(t,e,o){if(t>=this.level&&n(e)){var r=console[a[t].toLowerCase()]?console[a[t].toLowerCase()]:console.log;r.apply(void 0,["["+i()+"] ["+a[t]+"] "+this.name+" - "+e].concat(o))}},t}();e["default"]=u}])});
 
 /***/ }
 /******/ ])

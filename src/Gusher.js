@@ -55,7 +55,7 @@ export default class Gusher {
 
     connection.bind('message', (params) => {
       if (params.channel) {
-        let channel = this.channel(params.channel)
+        const channel = this.channel(params.channel)
         if (channel) {
           channel.handleEvent(params.event, params.data)
         }
@@ -122,7 +122,7 @@ export default class Gusher {
   }
 
   subscribe(channelName) {
-    let channel = this.channels.add(channelName, this)
+    const channel = this.channels.add(channelName, this)
     if (this.connection.state === 'connected') {
       channel.subscribe()
     }
@@ -136,7 +136,7 @@ export default class Gusher {
   }
 
   unsubscribe(channelName) {
-    let channel = this.channels.remove(channelName)
+    const channel = this.channels.remove(channelName)
     if (channel && this.connection.state === 'connected') {
       channel.unsubscribe()
     }

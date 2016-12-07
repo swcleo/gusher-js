@@ -1,3 +1,4 @@
+/* eslint no-restricted-syntax: 0 */
 import Channel from './Channel'
 
 export default class Channels {
@@ -19,20 +20,20 @@ export default class Channels {
   }
 
   remove(name) {
-    let channel = this.channels.get(name)
+    const channel = this.channels.get(name)
     this.channels.delete(name)
     return channel
   }
 
   all() {
-    let keys = []
-    for (let key of this.channels.keys()) {
+    const keys = []
+    for (const key of this.channels.keys()) {
       keys.push(key)
     }
     return keys
   }
 
   disconnect() {
-    this.channels.forEach((channel) => channel.disconnect())
+    this.channels.forEach(channel => channel.disconnect())
   }
 }

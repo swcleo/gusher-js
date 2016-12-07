@@ -82,7 +82,7 @@ export default class ConnectionManager {
 
     if (this.reconnection && !this.skipReconnect) {
       this.retryTimer = setTimeout(() => {
-        this.retryNum++
+        this.retryNum += 1
         Logger.debug('Reconnect attempts: ', this.retryNum)
         this.connect()
         this.emitter.emit('retry', { retry: this.retryNum })
@@ -120,10 +120,10 @@ export default class ConnectionManager {
     http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
 
     http.onreadystatechange = () => {
-      if(http.readyState === 4) {
+      if (http.readyState === 4) {
         if (http.status === 200) {
           try {
-            const response = JSON.parse(http.responseText )
+            const response = JSON.parse(http.responseText)
             this.connection.connect(response.token)
           } catch (e) {
             Logger.error('Auth', { responseText: http.responseText })
@@ -150,10 +150,10 @@ export default class ConnectionManager {
   }
 
   updateState(newState, data) {
-    let previousState = this.state
+    const previousState = this.state
     this.state = newState
     if (previousState !== newState) {
-      Logger.debug('State changed', previousState + ' -> ' + newState)
+      Logger.debug('State changed', `'${previousState}' -> '${newState}'`)
       this.emitter.emit('state_change', {
         previous: previousState,
         current: newState
@@ -165,9 +165,9 @@ export default class ConnectionManager {
   send(event, data, channel) {
     if (this.connection) {
       return this.connection.send(event, data, channel)
-    } else {
-      return false
     }
+
+    return false
   }
 
 }

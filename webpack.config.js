@@ -5,7 +5,8 @@ let config = {
   module: {
     loaders: [
       { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }
-    ]
+    ],
+    noParse: [ /\.min\.js/ ]
   },
   output: {
     library: 'Gusher',

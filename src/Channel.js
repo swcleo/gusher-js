@@ -27,7 +27,7 @@ export default class Channel {
   }
 
   handleEvent(event, data) {
-    if (event === "subscribe_succeeded") {
+    if (event === 'subscribe_succeeded') {
       this.subscribed = true;
     }
 

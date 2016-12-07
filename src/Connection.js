@@ -128,7 +128,7 @@ export default class Connection {
   }
 
   send(event, data, channel) {
-    let message = { event, data }
+    const message = { event, data }
 
     if (this.channel) {
       message.channel = channel
