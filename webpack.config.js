@@ -1,12 +1,13 @@
-let webpack = require('webpack')
-let env = process.env.NODE_ENV
+const webpack = require('webpack')
 
-let config = {
+const env = process.env.NODE_ENV
+
+const config = {
   module: {
     loaders: [
       { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }
     ],
-    noParse: [ /\.min\.js/ ]
+    noParse: [/\.min\.js/]
   },
   output: {
     library: 'Gusher',
