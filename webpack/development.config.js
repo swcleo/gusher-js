@@ -10,7 +10,7 @@ import moment from 'moment'
 export default new Config().extend('webpack/base.config.js').merge({
   devtool: 'eval',
   entry: {
-    app: [ require.resolve('webpack-dev-server/client') + '?/', require.resolve('webpack/hot/dev-server'), './test.js' ]
+    app: [ require.resolve('webpack-dev-server/client') + '?/', require.resolve('webpack/hot/dev-server') ]
   },
   output: {
       pathinfo: true
