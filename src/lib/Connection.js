@@ -27,13 +27,20 @@ export default class Connection {
   }
 
   connect(token) {
-    if (this.socket || !token) {
+    if (this.socket) {
       return false
     }
 
+    let url = this.url
+
+    if (token) {
+      url = `${url}?token=${token}`
+    }
+
     try {
-      this.socket = new WebSocket(`${this.url}?token=${token}`)
+      this.socket = new WebSocket(url)
     } catch (e) {
+      Logger.debug(e)
       return false
     }
 
@@ -42,6 +49,7 @@ export default class Connection {
     Logger.debug('Connecting', { url: this.url, token })
 
     this.changeState('connecting')
+
     return true
   }
 

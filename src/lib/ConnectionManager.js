@@ -105,42 +105,14 @@ export default class ConnectionManager {
   }
 
   connect() {
-    if (!this.options.auth || !this.options.jwt) {
-      return
-    }
     this.updateState('connecting')
-    this.skipReconnect = false
 
-    const http = new XMLHttpRequest()
+    this.connection.connect(this.options.token)
 
-    const data = `jwt=${this.options.jwt}`
+    Logger.debug('Auth', {
+      token: this.options.token,
+    })
 
-    http.open('POST', this.options.auth, true)
-
-    http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-
-    http.onreadystatechange = () => {
-      if (http.readyState === 4) {
-        if (http.status === 200) {
-          try {
-            const response = JSON.parse(http.responseText)
-            this.connection.connect(response.token)
-          } catch (e) {
-            Logger.error('Auth', { responseText: http.responseText })
-          }
-        }
-
-        Logger.debug('Auth', {
-          auth: this.options.auth,
-          jwt: this.options.jwt,
-          readyState: http.readyState,
-          status: http.status,
-          responseText: http.responseText
-        })
-      }
-    }
-
-    http.send(data)
   }
 
   disconnect() {

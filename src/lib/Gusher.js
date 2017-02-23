@@ -9,15 +9,6 @@ export default class Gusher {
 
     this.options = options
 
-    if (!this.options.jwt) {
-      throw new Error('Authenticate Error: JWT(JSON Web Token) is not defined')
-    }
-
-    if (!this.options.auth) {
-      throw new Error('Authenticate Error: API authentication is not defined')
-    }
-
-
     if (options.level) {
       Logger.setLevel(options.level)
     }
@@ -30,15 +21,15 @@ export default class Gusher {
   }
 
   getAuthToken() {
-    return this.options.jwt
+    return this.options.token || ''
   }
 
-  setAuthToken(jwt) {
-    if (!jwt) {
+  setAuthToken(token) {
+    if (!token) {
       return
     }
 
-    this.options.jwt = jwt
+    this.options.token = token
     this.connection.unBindAll()
     this.connection.disconnect()
     this.connection = new ConnectionManager(this.key, this.options)
