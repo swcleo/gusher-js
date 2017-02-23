@@ -15,7 +15,7 @@ npm install gusher-js --save
 
 const gusher = new Gusher({ANY_NAME || APP_KEY}', {
     url: 'ws://{HOST_URL}/ws/{APP_KEY}',
-    jwt: 'JWT_TOKEN',
+    token: 'TOKEN',
     level: {DEBUG}
 })
 
@@ -30,7 +30,7 @@ channel.bind('event_name', (data) => {
 ```
 ## Gusher Options
 * url: websocket connect url
-* jwt: JWT(JSON Web Token)
+* token: JWT(Auth Token)
 * reconnection auto reconnect default: true
 * retryMaxL: retry number default: Number.MAX_SAFE_INTEGER
 * reconnectionDelay: retry delay (ms)   default: 3000

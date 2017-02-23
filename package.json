@@ -2,7 +2,7 @@
   "name": "gusher-js",
   "version": "0.1.1",
   "description": "",
-  "main": "dist/GusherJS.min.js",
+  "main": "build/GusherJS.js",
   "scripts": {
     "start": "webpack-dashboard -c cyan -- babel-node scripts/start.js",
     "build": "NODE_ENV=production webpack"
