@@ -28,7 +28,7 @@ export default class Connection {
 
   connect(token) {
     if (this.socket) {
-      return false
+      this.close()
     }
 
     let url = this.url
@@ -56,6 +56,7 @@ export default class Connection {
   close() {
     if (this.socket) {
       this.socket.close()
+      this.socket = null
       return true
     }
 
