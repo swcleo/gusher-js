@@ -40,7 +40,7 @@ export default class Connection {
     try {
       this.socket = new WebSocket(url)
     } catch (e) {
-      Logger.debug(e)
+      this.onError(e)
       return false
     }
 

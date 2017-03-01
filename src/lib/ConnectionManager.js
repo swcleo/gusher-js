@@ -124,13 +124,16 @@ export default class ConnectionManager {
 
   updateState(newState, data) {
     const previousState = this.state
+
     this.state = newState
+
     if (previousState !== newState) {
       Logger.debug('State changed', `'${previousState}' -> '${newState}'`)
       this.emitter.emit('state_change', {
         previous: previousState,
         current: newState
       })
+
       this.emitter.emit(newState, data)
     }
   }

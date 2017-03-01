@@ -32,8 +32,7 @@ export default class Gusher {
     this.options.token = token
     this.connection.unBindAll()
     this.connection.disconnect()
-    this.connection = new ConnectionManager(this.key, this.options)
-    this.connection.connect()
+    this.connection = this.createConnection()
   }
 
   createConnection() {
@@ -81,6 +80,7 @@ export default class Gusher {
 
     connection.bind('error', (err) => {
       Logger.error('Error', err)
+      this.emitter.emit('error', err)
     })
 
     return connection
