@@ -102,7 +102,11 @@ export default class ConnectionManager {
   }
 
   unBindAll(...evt) {
-    this.emitter.removeAllListeners(evt)
+    if (evt.length) {
+      this.emitter.removeAllListeners(evt)
+    } else {
+      this.emitter.removeAllListeners()
+    }
   }
 
   connect() {
