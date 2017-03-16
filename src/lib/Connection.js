@@ -10,8 +10,8 @@ import Logger from './Logger'
  */
 export default class Connection {
   constructor(options = {}) {
-    this.options = options || {}
     this.url = options.url || ''
+    this.token = options.token || ''
     this.state = 'initialized'
     this.emitter = new EventEmitter()
   }
@@ -46,7 +46,7 @@ export default class Connection {
 
     this.bindListeners()
 
-    Logger.debug('Connecting', { url: this.url, token })
+    Logger.debug('Connecting', { url: this.url, token: this.token })
 
     this.changeState('connecting')
 

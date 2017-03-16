@@ -15,9 +15,11 @@ export default class ConnectionManager {
   constructor(key = '', options = {}) {
     this.key = key
 
-    this.options = options
-
     this.state = 'initialized'
+
+    this.url = options.url
+
+    this.token = options.token
 
     this.emitter = new EventEmitter()
 
@@ -35,7 +37,7 @@ export default class ConnectionManager {
 
     this.retryTimer = null
 
-    this.connection = new Connection(this.options)
+    this.connection = new Connection({ url: this.url, token: this.token })
 
     this.connection.bind('open', () => {
       this.connectionStartTimestamp = Date.now()
@@ -112,10 +114,10 @@ export default class ConnectionManager {
   connect() {
     this.updateState('connecting')
 
-    this.connection.connect(this.options.token)
+    this.connection.connect(this.token)
 
     Logger.debug('Auth', {
-      token: this.options.token,
+      token: this.token,
     })
 
   }
