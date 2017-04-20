@@ -145,6 +145,8 @@ export default class Connection {
 
     Logger.debug('Event sent', message)
 
-    this.socket.send(JSON.stringify(message))
+    if (this.socket) {
+      this.socket.send(JSON.stringify(message))
+    }
   }
 }
