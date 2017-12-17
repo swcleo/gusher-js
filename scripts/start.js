@@ -1,28 +1,24 @@
-import webpack from 'webpack'
-import WebpackDevServer from 'webpack-dev-server'
-import rimraf from 'rimraf'
-import config from '../webpack.config.babel'
+const webpack = require('webpack')
+const WebpackDevServer = require('webpack-dev-server')
+const rimraf = require('rimraf')
+const webpackConfig = require('../webpack.config')
 
-const port = 3100
-
-const compiler = webpack(config)
+const compiler = webpack(webpackConfig)
 
 rimraf.sync('build/*')
 
 const server = new WebpackDevServer(compiler, {
   hot: true,
-  publicPath: config.output.publicPath,
-  quiet: true,
+  publicPath: webpackConfig.output.publicPath,
+  quiet: false,
+  stats: {
+    children: false,
+    colors: true
+  },
   historyApiFallback: true,
   watchOptions: {
     ignored: /node_modules/
   },
-  proxy: {
-    '/pt/*': {
-      target: 'http://localhost:3000',
-      secure: false
-    }
-  }
 })
 
-server.listen(port)
+server.listen(3100)
