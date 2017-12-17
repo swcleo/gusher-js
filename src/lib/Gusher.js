@@ -9,8 +9,8 @@ export default class Gusher {
 
     this.options = options
 
-    if (options.level) {
-      Logger.setLevel(options.level)
+    if (options.debug === true) {
+      Logger.setLevel('DEBUG')
     }
 
     this.emitter = new EventEmitter()

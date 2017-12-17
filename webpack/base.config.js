@@ -6,13 +6,13 @@ module.exports = new WebpackConfig.Config().merge({
   context: path.resolve(__dirname, '..', 'src'),
 
   entry: {
-    app: ['./index.js']
+    GusherJS: ['./index.js']
   },
 
   output: {
     path: path.resolve(__dirname, '..', 'build'),
     libraryTarget: 'umd',
-    library: 'GusherJS'
+    library: 'Gusher'
   },
 
   resolve: {
