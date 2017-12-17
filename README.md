@@ -3,31 +3,35 @@ gusher client tool
 
 
 ## Getting Started
-Install `gusher-js`:
 
 ```
 npm install gusher-js --save
 ```
 
-
 ### Usage
 ```
+// Kaazing WebSocket Echo Demo
+const gusher = new Gusher('test', {
+  url: 'ws://demos.kaazing.com/echo',
+  token: 'test',
+  debug: true
+})
 
-const gusher = new Gusher({ANY_NAME || APP_KEY}', {
-    url: 'ws://{HOST_URL}/ws/{APP_KEY}',
-    token: 'TOKEN',
-    level: {DEBUG}
+// how to get gusher server's url & token? => https://github.com/syhlion/gusher
+
+gusher.bind('message', (m) => {
+  console.log(m)
+})
+
+gusher.bind('connected', (e) => {
+  setInterval(() => {
+    gusher.send('test', JSON.stringify({ time: new Date() }))
+  }, 3000)
 })
 
 gusher.connect()
-
-const channel = gusher.subscribe('channel_name')
-
-channel.bind('event_name', (data) => {
-  console.log('Received from channel: ', data)
-})
-
 ```
+
 ## Gusher Options
 * url: websocket connect url
 * token: JWT(Auth Token)
@@ -54,7 +58,6 @@ Pusher implement server-side by go.
 * [gusher.cluster](https://github.com/syhlion/gusher.cluster)  
 * [pusher](https://pusher.com/)  
 * [pusher-js](https://github.com/pusher/pusher-js)
-
 
 ## Support
 If you have any problem or suggestion please open an issue [here](https://github.com/cswleocsw/gusher-js/issues).

@@ -1,49 +1,22 @@
-import webpack from 'webpack'
-import Config from 'webpack-config'
-import DashboardPlugin from 'webpack-dashboard/plugin'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
-import BrowserSyncPlugin from 'browser-sync-webpack-plugin'
-import PathRewriterPlugin from 'webpack-path-rewriter'
-import git from 'git-rev-sync'
-import moment from 'moment'
+const webpack = require('webpack')
+const WebPackConfig = require('webpack-config')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
+const browserSyncConfig =  require('./browser-sync.config')
 
-export default new Config().extend('webpack/base.config.js').merge({
-  devtool: 'eval',
+module.exports = new WebPackConfig.Config().extend('webpack/base.config.js').merge({
+  devtool: '#cheap-module-eval-source-map',
   entry: {
-    app: [ require.resolve('webpack-dev-server/client') + '?/', require.resolve('webpack/hot/dev-server') ]
-  },
-  output: {
-      pathinfo: true
+    'webpack-dev-server-client': [require.resolve('webpack-dev-server/client') + '?/', require.resolve('webpack/hot/dev-server')]
   },
   plugins: [
-    new DashboardPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new PathRewriterPlugin({ emitStats: false }),
+    new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './index.pug',
-      excludeChunks: ['pitaya', 'header'],
-      git: git.short(),
-      rev: moment().format()
+      hash: true
     }),
     new BrowserSyncPlugin(
-      {
-        host: 'localhost',
-        port: 4000,
-        proxy: {
-          target: 'http://localhost:3100/',
-          ws: true
-        },
-        logPrefix: 'gusher',
-        plugins: [
-          {
-            module: 'bs-html-injector',
-            options: {
-              files: [ 'src/**/*.pug' ]
-            }
-          }
-        ]
-      },
+      browserSyncConfig,
       {
         reload: false
       }

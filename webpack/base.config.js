@@ -1,18 +1,18 @@
-import path from 'path'
-import webpack from 'webpack'
-import Config from 'webpack-config'
-import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
+const path = require('path')
+const webpack = require('webpack')
+const WebpackConfig = require('webpack-config')
 
-export default new Config().merge({
+module.exports = new WebpackConfig.Config().merge({
   context: path.resolve(__dirname, '..', 'src'),
 
   entry: {
-    app: ['./index.js']
+    GusherJS: ['./index.js']
   },
 
   output: {
-    filename: 'GusherJS.js',
-    path: path.resolve(__dirname, '..', 'build')
+    path: path.resolve(__dirname, '..', 'build'),
+    libraryTarget: 'umd',
+    library: 'Gusher'
   },
 
   resolve: {
@@ -23,7 +23,6 @@ export default new Config().merge({
   },
 
   plugins: [
-    new CaseSensitivePathsPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
     })
@@ -35,10 +34,6 @@ export default new Config().merge({
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: /node_modules/
-      },
-      {
-        test: /\.pug$/,
-        loader: 'pug-loader'
       }
     ]
   }
