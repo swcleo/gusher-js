@@ -44,11 +44,28 @@ export default class Gusher {
     })
 
     connection.bind('message', (params) => {
+      if (!params) {
+        return
+      }
+
+      // TODO: 單一頻道訂閱
       if (params.channel) {
-        const channel = this.channel(params.channel)
+        const channel = this.channels.find(params.channel)
+
         if (channel) {
           channel.handleEvent(params.event, params.data)
         }
+      }
+
+      // TODO: 多頻道訂閱
+      if (params.data && params.data.channel && Array.isArray(params.data.channel)) {
+        params.data.channel.forEach((ch) => {
+          const channel = this.channels.find(ch)
+
+          if (channel) {
+            channel.handleEvent(params.event, params.data)
+          }
+        })
       }
 
       this.emitter.emit(params.event, params.data)
@@ -120,10 +137,28 @@ export default class Gusher {
     return channel
   }
 
-  subscribeAll() {
-    this.channels.channels.forEach((_, channelName) => {
-      this.subscribe(channelName)
+  subscribes(channels) {
+    if (!Array.isArray(channels)) {
+      return
+    }
+
+    const returnValues = {}
+
+    channels.forEach((channelName) => {
+      returnValues[channelName] = this.channels.add(channelName, this)
     })
+
+    if (this.connection.state === 'connected') {
+      this.subscribeAll(channels)
+    }
+
+    return returnValues
+  }
+
+  subscribeAll(channels) {
+    const multi_channel  = channels ? channels : this.channels.all()
+
+    this.send('gusher.multi_subscribe', { 'multi_channel': multi_channel })
   }
 
   unsubscribe(channelName) {
