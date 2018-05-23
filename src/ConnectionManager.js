@@ -1,5 +1,4 @@
 import EventEmitter from 'events'
-import assign from 'object-assign'
 import Connection from './Connection'
 import Logger from './Logger'
 
@@ -65,7 +64,7 @@ export default class ConnectionManager {
       const sessionTime = Date.now() - this.connectionStartTimestamp
 
       if (sessionTime > 0 && this.connectionStartTimestamp !== 0) {
-        this.emitter.emit('@closed', assign({}, evt, { session_time: sessionTime }))
+        this.emitter.emit('@closed', Object.assign({}, evt, { session_time: sessionTime }))
         Logger.debug(`Session Time: ${sessionTime} ms`)
         this.connectionStartTimestamp = 0
       }

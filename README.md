@@ -6,17 +6,14 @@ gusher client tool
 Install `gusher-js`:
 
 ```
-npm install gusher-js --save
+npm install gusher-js
 ```
-
 
 ### Usage
-```
-
-const gusher = new Gusher({ANY_NAME || APP_KEY}', {
-    url: 'ws://{HOST_URL}/ws/{APP_KEY}',
-    token: 'TOKEN',
-    level: {DEBUG}
+```js
+const gusher = new Gusher('app_name', {
+    url: 'websocket_url',
+    token: 'token'
 })
 
 gusher.connect()
@@ -28,6 +25,7 @@ channel.bind('event_name', (data) => {
 })
 
 ```
+
 ## Gusher Options
 * url: websocket connect url
 * token: JWT(Auth Token)
