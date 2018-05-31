@@ -8,5 +8,14 @@ module.exports = {
     library: 'Gusher',
     libraryTarget: 'umd'
   },
+  module: {
+    rules: [{
+      test: /\.js$/,
+      exclude: /(node_modules|bower_components)/,
+      use: {
+        loader: 'babel-loader',
+      }
+    }]
+  },
   mode: process.env.NODE_ENV === 'development' ? 'development' : 'production'
 }
