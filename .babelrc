@@ -1,9 +1,17 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "browsers": [">0.25%"]
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": [
+            "ie >= 11",
+            "android >= 4.0", 
+            "ios >= 8"
+          ]
+        },
+        "debug": true
       }
-    }]
+    ]
   ]
 }
