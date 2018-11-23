@@ -9,10 +9,6 @@ class Gusher {
 
     this.options = options
 
-    if (options.level) {
-      Logger.setLevel(options.level)
-    }
-
     this.emitter = new EventEmitter()
 
     this.channels = new Channels()
