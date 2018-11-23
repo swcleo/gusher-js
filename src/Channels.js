@@ -27,9 +27,11 @@ export default class Channels {
 
   all() {
     const keys = []
-    for (const key of this.channels.keys()) {
-      keys.push(key)
-    }
+
+    this.channels.forEach((channel, name) => {
+      keys.push(name)
+    })
+
     return keys
   }
 

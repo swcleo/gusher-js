@@ -139,7 +139,7 @@ export default class Connection {
   send(event, data, channel) {
     const message = { event, data }
 
-    if (this.channel) {
+    if (channel) {
       message.channel = channel
     }
 

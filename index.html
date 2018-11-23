@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <script src="dist/Gusher.js"></script>
+  </head>
+  <body></body>
+
+  <script>
+    // https://www.npmjs.com/package/debug
+    localStorage.debug = "Gusher";
+
+    var gusher = new Gusher("gusher", {
+      url: "wss://echo.websocket.org"
+    });
+
+    // test gusher channel
+    const testChannel = gusher.subscribe("test");
+
+    testChannel.bind("time", function(data) {
+      console.log(data);
+    });
+
+    gusher.bind("connected", function() {
+      console.log("webscoket connected");
+
+      // try to send event to test Channel
+      gusher.send("time", { now: Date.now() }, "test");
+    });
+
+    gusher.connect();
+  </script>
+</html>

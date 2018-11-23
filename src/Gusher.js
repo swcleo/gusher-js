@@ -3,7 +3,7 @@ import ConnectionManager from './ConnectionManager'
 import Channels from './Channels'
 import Logger from './Logger'
 
-export default class Gusher {
+class Gusher {
   constructor(appKey = '', options = {}) {
     this.key = appKey
 
@@ -172,3 +172,5 @@ export default class Gusher {
     this.connection.send(event, data, channel)
   }
 }
+
+module.exports = Gusher

@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "events": "^2.0.0",
-    "log4js-free": "0.0.7"
+    "log4js-free": "1.0.1"
   },
   "repository": {
     "type": "git",
