@@ -31,7 +31,7 @@ export default class Connection {
       this.close()
     }
 
-    let url = this.url
+    let url = this.url || 'ws://127.0.0.1'
 
     if (token) {
       url = `${url}?token=${token}`
@@ -109,7 +109,7 @@ export default class Connection {
       this.changeState('closed', {
         code: closeEvent.code,
         reason: closeEvent.reason,
-        wasClean: closeEvent.wasClean
+        wasClean: closeEvent.wasClean,
       })
     } else {
       this.changeState('closed')

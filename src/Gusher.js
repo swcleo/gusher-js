@@ -134,11 +134,11 @@ class Gusher {
   }
 
   subscribes(channels) {
-    if (!Array.isArray(channels)) {
-      return
-    }
-
     const returnValues = {}
+
+    if (!Array.isArray(channels)) {
+      return returnValues
+    }
 
     channels.forEach((channelName) => {
       returnValues[channelName] = this.channels.add(channelName, this)
@@ -152,9 +152,9 @@ class Gusher {
   }
 
   subscribeAll(channels) {
-    const multi_channel  = channels ? channels : this.channels.all()
+    const multiChannel = channels || this.channels.all()
 
-    this.send('gusher.multi_subscribe', { 'multi_channel': multi_channel })
+    this.send('gusher.multi_subscribe', { multi_channel: multiChannel })
   }
 
   unsubscribe(channelName) {

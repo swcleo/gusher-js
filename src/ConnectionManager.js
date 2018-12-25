@@ -22,9 +22,9 @@ export default class ConnectionManager {
 
     this.emitter = new EventEmitter()
 
-    this.reconnection = options.reconnection === undefined ? true : options.reconnection
+    this.reconnection = !options.reconnection ? true : options.reconnection
 
-    this.reconnectionDelay = options.reconnectionDelay === undefined ? 3000 : options.reconnectionDelay
+    this.reconnectionDelay = !options.reconnectionDelay ? 3000 : options.reconnectionDelay
 
     this.retryMax = options.retryMax === undefined ? Number.MAX_SAFE_INTEGER : options.retryMax
 
@@ -118,7 +118,6 @@ export default class ConnectionManager {
     Logger.debug('Auth', {
       token: this.token,
     })
-
   }
 
   disconnect() {
@@ -136,7 +135,7 @@ export default class ConnectionManager {
       Logger.debug('State changed', `'${previousState}' -> '${newState}'`)
       this.emitter.emit('state_change', {
         previous: previousState,
-        current: newState
+        current: newState,
       })
 
       this.emitter.emit(newState, data)
@@ -150,5 +149,4 @@ export default class ConnectionManager {
 
     return false
   }
-
 }

@@ -2,10 +2,12 @@
   "name": "gusher-js",
   "version": "0.3.1",
   "description": "",
-  "main": "dist/Gusher.js",
+  "main": "dist/gusher.js",
   "scripts": {
-    "start": "NDOE_ENV=development webpack --watch",
-    "build": "NDOE_ENV=production webpack"
+    "lint": "eslint src",
+    "dev": "webpack --mode development --output-filename gusher.js",
+    "prod": "webpack --mode production --output-filename gusher.min.js",
+    "build": "npm run dev && npm run prod"
   },
   "author": "cswleocsw <cswleo@gmail.com>",
   "devDependencies": {
@@ -14,6 +16,9 @@
     "babel-preset-env": "^1.7.0",
     "cross-env": "^5.1.6",
     "cz-conventional-changelog": "^2.1.0",
+    "eslint": "^5.11.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
     "webpack": "^4.8.3",
     "webpack-bundle-analyzer": "^2.13.0",
     "webpack-cli": "^2.1.3"
