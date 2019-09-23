@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import chunk from 'lodash.chunk'
 import ConnectionManager from './ConnectionManager'
 import Channels from './Channels'
 import Logger from './Logger'
@@ -154,7 +155,9 @@ class Gusher {
   subscribeAll(channels) {
     const multiChannel = channels || this.channels.all()
 
-    this.send('gusher.multi_subscribe', { multi_channel: multiChannel })
+    chunk(multiChannel, 10).forEach((group) => {
+      this.send('gusher.multi_subscribe', { multi_channel: group })
+    });
   }
 
   unsubscribe(channelName) {

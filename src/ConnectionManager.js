@@ -22,7 +22,7 @@ export default class ConnectionManager {
 
     this.emitter = new EventEmitter()
 
-    this.reconnection = !options.reconnection ? true : options.reconnection
+    this.reconnection = !!options.reconnection
 
     this.reconnectionDelay = !options.reconnectionDelay ? 3000 : options.reconnectionDelay
 
