@@ -6,7 +6,6 @@ const merge = require("webpack-merge");
 const TARGET = process.env.npm_lifecycle_event;
 
 const baseConfig = {
-  entry: "./src/index.ts",
   output: {
     filename: "gusher.js",
     path: path.resolve(__dirname, "dist"),
@@ -31,12 +30,14 @@ const baseConfig = {
 if (TARGET === "start") {
   module.exports = merge(baseConfig, {
     mode: "development",
+    entry: "./client.ts",
     plugins: [new HtmlWebpackPlugin()]
   });
 }
 
 if (TARGET === "build") {
   module.exports = merge(baseConfig, {
+    entry: "./src/index.ts",
     mode: "production"
   });
 }

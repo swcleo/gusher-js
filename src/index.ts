@@ -1,5 +1,3 @@
-class Gusher {
+import Gusher from "./gusher";
 
-}
-
-module.exports = Gusher
+module.exports = Gusher;
