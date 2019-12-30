@@ -1,7 +1,6 @@
 import EventEmitter from "events";
 import chunk from "lodash.chunk";
 import Channels from "./channels";
-import Channel from "./logger";
 import ConnectionManager from "./connection-manager";
 import Logger from "./logger";
 
