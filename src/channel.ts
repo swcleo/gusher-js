@@ -1,5 +1,4 @@
 import EventEmitter from "events";
-import Gusher from "./gusher";
 
 export default class Channel implements IChannel {
   name: string;

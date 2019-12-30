@@ -1,5 +1,4 @@
 import Channel from "./channel";
-import Gusher from "./gusher";
 
 export default class Channels implements IChannels {
   channels: Map<string, IChannel>;

@@ -12,10 +12,6 @@ interface Logger {
   emerg(...agrs: any): void;
 }
 
-declare module "log4js-free" {
-  export function getLogger(name: string): Logger;
-}
-
 interface IGusher {
   allChannel(): void;
   bind(event: string, callback: any): IGusher;
@@ -92,7 +88,7 @@ interface IConnectionOptions {
 }
 
 interface IGusherMessageData {
-  channels: any[]
+  channels: any[];
 }
 
 interface IGusherMessage {
