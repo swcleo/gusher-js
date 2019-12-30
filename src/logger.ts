@@ -1,22 +1,26 @@
 import time from "./time";
-import { SEVERITY } from './serverity'
+import { SEVERITY } from "./serverity";
+
+function isDebug() {
+  return (
+    localStorage.debug === "*" ||
+    localStorage.debug === "Gusher"
+  );
+}
 
 class Logger {
-  name: string;
-
-  constructor(name: string) {
-    this.name = name;
-  }
-
   write(serverity: SEVERITY, args: any[]) {
-    const params = [];
-    params.push(
-      `%c${SEVERITY[serverity]} %c${time()}`,
-      "color: green;",
-      "color: #347deb;"
-    );
-    const output: any = params.concat(args);
-    console.log.apply(console.log, output);
+    if (isDebug()) {
+      const params = [];
+      params.push(
+        `%cGusher %c${SEVERITY[serverity]} %c${time()}`,
+        "color: red;",
+        "color: green;",
+        "color: #347deb;"
+      );
+      const output: any = params.concat(args);
+      console.log.apply(console.log, output);
+    }
   }
 
   log(...args: any[]) {
@@ -56,4 +60,4 @@ class Logger {
   }
 }
 
-export default new Logger("Gusher");
+export default new Logger();
