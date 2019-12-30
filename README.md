@@ -25,3 +25,10 @@ channel.bind('event', (data) => {
 })
 
 ```
+
+### Debug 
+
+Open browser's Developer Edition, change to console panel, then type 
+
+`localStorage.debug = "Gusher"`
+
