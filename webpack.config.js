@@ -2,6 +2,7 @@ const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const merge = require("webpack-merge");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 const TARGET = process.env.npm_lifecycle_event;
 
@@ -31,7 +32,7 @@ if (TARGET === "start") {
   module.exports = merge(baseConfig, {
     mode: "development",
     entry: "./client.ts",
-    plugins: [new HtmlWebpackPlugin()]
+    plugins: [new HtmlWebpackPlugin(), new BundleAnalyzerPlugin()]
   });
 }
 
