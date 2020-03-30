@@ -3,7 +3,7 @@
   "version": "1.0.3",
   "description": "gusher.cluster client",
   "main": "dist/gusher.js",
-  "types": "types/index.d.ts",
+  "types": "dist/gusher.d.ts",
   "scripts": {
     "dev": "nodemon --exec ts-node -- server.ts",
     "start": "webpack-dev-server",
