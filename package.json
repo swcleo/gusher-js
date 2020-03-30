@@ -1,6 +1,6 @@
 {
   "name": "gusher-js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "gusher.cluster client",
   "main": "dist/gusher.js",
   "types": "dist/gusher.d.ts",
