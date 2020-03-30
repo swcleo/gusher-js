@@ -1,4 +1,4 @@
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import chunk from "lodash.chunk";
 import Channels from "./channels";
 import ConnectionManager from "./connection-manager";
@@ -8,7 +8,7 @@ export default class Gusher implements IGusher {
   key: string;
   options: IGusherOptions;
   emitter: EventEmitter;
-  channels: Channels;
+  channels: IChannels;
   connection: IConnectionManager;
 
   constructor(appKey = "", options: IGusherOptions) {

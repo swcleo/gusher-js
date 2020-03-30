@@ -1,4 +1,4 @@
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import Logger from "./logger";
 
 export default class Connection implements IConnection {

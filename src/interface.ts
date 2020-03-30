@@ -23,7 +23,7 @@ interface IGusher {
   send(event: string, data: any, channel?: string | undefined): void;
   setAuthToken(token: string): void;
   subscribe(channelName: string): IChannel | void;
-  subscribeAll(): void;
+  subscribeAll(channels: string[] | undefined): void;
   subscribes(channels: string[]): void;
   unsubscribe(channelName: string): void;
   unbind(event: string, callback: any): IGusher;
@@ -58,7 +58,7 @@ interface IConnection {
 
 interface IChannels {
   add(name: string, gusher: IGusher): IChannel;
-  all(): void;
+  all(): string[] | undefined;
   disconnect(): void;
   find(name: string): IChannel | undefined;
   remove(name: string): IChannel | undefined;

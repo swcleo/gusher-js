@@ -37,7 +37,7 @@ if (TARGET === "start") {
 
 if (TARGET === "build") {
   module.exports = merge(baseConfig, {
-    entry: "./src/index.ts",
+    entry: "./src/gusher.ts",
     mode: "production"
   });
 }
