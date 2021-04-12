@@ -1,12 +1,34 @@
 import { EventEmitter } from "events";
 import { GusherOptions } from "./gusher";
-import Connection from "./connection";
+import Connection, { EmitterEvent as ConnectionEvent } from "./connection";
 import Logger from "./logger";
+
+export enum State {
+  INIT = 'initialized',
+  CONNECTED = 'connected',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  CONNECTING = 'connecting',
+  DISCONNECTED = 'disconnected'
+}
+
+export enum EmitterEvent {
+  INIT = 'initialized',
+  CONNECTED = 'connected',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  ATCLOSED = '@closed',
+  CONNECTING = 'connecting',
+  DISCONNECTED = 'disconnected',
+  MSG = 'message',
+  RETRYMAX = 'retryMax',
+  RETRY = 'retry'
+}
 
 export default class ConnectionManager {
   key: string;
   options: GusherOptions;
-  state: string;
+  state: State;
   url: string;
   token: string;
   emitter: EventEmitter;
@@ -24,7 +46,7 @@ export default class ConnectionManager {
 
     this.options = options;
 
-    this.state = "initialized";
+    this.state = State.INIT;
 
     this.url = options.url;
 
@@ -53,7 +75,7 @@ export default class ConnectionManager {
 
     this.connection = new Connection({ url: this.url, token: this.token });
 
-    this.connection.bind("open", () => {
+    this.connection.bind(ConnectionEvent.OPEN, () => {
       this.connectionStartTimestamp = Date.now();
 
       if (this.retryTimer) {
@@ -64,18 +86,18 @@ export default class ConnectionManager {
 
       this.skipReconnect = false;
 
-      this.updateState("connected");
+      this.updateState(State.CONNECTED);
     });
 
-    this.connection.bind("message", (message: any) => {
-      this.emitter.emit("message", message);
+    this.connection.bind(ConnectionEvent.MSG, (message: any) => {
+      this.emitter.emit(EmitterEvent.MSG, message);
     });
 
-    this.connection.bind("error", (err: any) => {
-      this.updateState("error", err);
+    this.connection.bind(ConnectionEvent.ERROR, (err: any) => {
+      this.updateState(State.ERROR, err);
     });
 
-    this.connection.bind("closed", (evt: any) => {
+    this.connection.bind(ConnectionEvent.CLOSED, (evt: any) => {
       const sessionTime = Date.now() - this.connectionStartTimestamp;
 
       if (sessionTime > 0 && this.connectionStartTimestamp !== 0) {
@@ -87,7 +109,7 @@ export default class ConnectionManager {
         this.connectionStartTimestamp = 0;
       }
 
-      this.updateState("closed", evt);
+      this.updateState(State.CLOSED, evt);
 
       this.retryIn(this.reconnectionDelay);
     });
@@ -96,7 +118,7 @@ export default class ConnectionManager {
   retryIn(delay = 0) {
     if (this.retryNum >= this.retryMax) {
       this.disconnect();
-      this.emitter.emit("retryMax");
+      this.emitter.emit(EmitterEvent.RETRYMAX);
       Logger.log("Reconnect Max: ", this.retryNum);
     }
 
@@ -105,7 +127,7 @@ export default class ConnectionManager {
         this.retryNum += 1;
         Logger.log("Reconnect attempts: ", this.retryNum);
         this.connect();
-        this.emitter.emit("retry", { retry: this.retryNum });
+        this.emitter.emit(EmitterEvent.RETRY, { retry: this.retryNum });
       }, delay);
     }
   }
@@ -129,7 +151,7 @@ export default class ConnectionManager {
   }
 
   connect() {
-    this.updateState("connecting");
+    this.updateState(State.CONNECTING);
 
     this.connection.connect(this.token);
 
@@ -141,20 +163,16 @@ export default class ConnectionManager {
   disconnect() {
     this.skipReconnect = true;
     this.connection.close();
-    this.updateState("disconnected");
+    this.updateState(State.DISCONNECTED);
   }
 
-  updateState(newState: string, data?: any) {
+  updateState(newState: State, data?: any) {
     const previousState = this.state;
 
     this.state = newState;
 
     if (previousState !== newState) {
       Logger.log("State changed", `'${previousState}' -> '${newState}'`);
-      this.emitter.emit("state_change", {
-        previous: previousState,
-        current: newState,
-      });
 
       this.emitter.emit(newState, data);
     }

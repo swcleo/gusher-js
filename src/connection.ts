@@ -12,9 +12,26 @@ export interface Message {
   channel?: string;
 }
 
+export enum State {
+  INIT = 'initialized',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  CONNECTING = 'connecting',
+  OPEN = 'open'
+}
+
+export enum EmitterEvent {
+  INIT = 'initialized',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  CONNECTING = 'connecting',
+  OPEN = 'open',
+  MSG = 'message'
+}
+
 export default class Connection {
+  state: State;
   url = "";
-  state = "initialized";
   token = "";
   emitter: EventEmitter;
   socket: WebSocket | undefined;
@@ -24,7 +41,7 @@ export default class Connection {
 
     this.token = options.token;
 
-    this.state = "initialized";
+    this.state = State.INIT;
 
     this.emitter = new EventEmitter();
   }
@@ -61,7 +78,7 @@ export default class Connection {
 
     Logger.log("Connecting", { url: this.url, token: this.token });
 
-    this.changeState("connecting");
+    this.changeState(State.CONNECTING);
 
     return true;
   }
@@ -75,7 +92,7 @@ export default class Connection {
     return false;
   }
 
-  changeState(state: string, params?: any) {
+  changeState(state: State, params?: any) {
     this.state = state;
     this.emitter.emit(state, params);
   }
@@ -110,7 +127,7 @@ export default class Connection {
   }
 
   onOpen(evt: Event) {
-    this.changeState("open");
+    this.changeState(State.OPEN);
 
     if (this.socket) {
       this.socket.onopen = null;
@@ -118,18 +135,18 @@ export default class Connection {
   }
 
   onError(error: Event) {
-    this.emitter.emit("error", error);
+    this.emitter.emit(EmitterEvent.ERROR, error);
   }
 
   onClose(closeEvent: CloseEvent) {
     if (closeEvent) {
-      this.changeState("closed", {
+      this.changeState(State.CLOSED, {
         code: closeEvent.code,
         reason: closeEvent.reason,
         wasClean: closeEvent.wasClean,
       });
     } else {
-      this.changeState("closed");
+      this.changeState(State.CLOSED);
     }
 
     this.unbindListeners();
@@ -151,7 +168,7 @@ export default class Connection {
     }
 
     Logger.log("Event recd", message);
-    this.emitter.emit("message", message);
+    this.emitter.emit(EmitterEvent.MSG, message);
   }
 
   send(event: string, data: any, channel?: string | undefined) {

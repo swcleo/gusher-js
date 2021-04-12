@@ -2,9 +2,20 @@ import { EventEmitter } from "events";
 import chunk from "lodash.chunk";
 import Channel from "./channel";
 import Channels from "./channels";
-import ConnectionManager from "./connection-manager";
+import ConnectionManager, { EmitterEvent as ConnectionManagerEvent } from "./connection-manager";
 import { Message } from "./connection";
 import Logger from "./logger";
+
+export enum GusherEvent {
+  ALL = "*",
+  CONNECTED = "connected",
+  DISCONNECTED = "disconnected",
+  RETRY = "retry",
+  RETRYMAX = "retryMax",
+  CLOSED = "closed",
+  ATCLOASED = "@closed",
+  ERROR = "error",
+}
 
 export interface GusherOptions {
   url: string;
@@ -58,12 +69,12 @@ export default class Gusher {
   createConnection(): ConnectionManager {
     const connection = new ConnectionManager(this.key, this.options);
 
-    connection.bind("connected", () => {
+    connection.bind(ConnectionManagerEvent.CONNECTED, () => {
       this.subscribeAll();
-      this.emitter.emit("connected");
+      this.emitter.emit(GusherEvent.CONNECTED);
     });
 
-    connection.bind("message", (params: Message) => {
+    connection.bind(ConnectionManagerEvent.MSG, (params: Message) => {
       if (!params) {
         return;
       }
@@ -92,33 +103,33 @@ export default class Gusher {
 
       this.emitter.emit(params.event, params.data);
 
-      this.emitter.emit("*", params);
+      this.emitter.emit(GusherEvent.ALL, params);
     });
 
-    connection.bind("disconnected", () => {
+    connection.bind(ConnectionManagerEvent.DISCONNECTED, () => {
       this.channels.disconnect();
-      this.emitter.emit("disconnected");
+      this.emitter.emit(GusherEvent.DISCONNECTED);
     });
 
-    connection.bind("retry", (evt: Event) => {
-      this.emitter.emit("retry", evt);
+    connection.bind(ConnectionManagerEvent.RETRY, (evt: Event) => {
+      this.emitter.emit(GusherEvent.RETRY, evt);
     });
 
-    connection.bind("retryMax", () => {
-      this.emitter.emit("retryMax");
+    connection.bind(ConnectionManagerEvent.RETRYMAX, () => {
+      this.emitter.emit(GusherEvent.RETRYMAX);
     });
 
-    connection.bind("@closed", (evt: Event) => {
-      this.emitter.emit("@closed", evt);
+    connection.bind(ConnectionManagerEvent.ATCLOSED, (evt: Event) => {
+      this.emitter.emit(GusherEvent.ATCLOASED, evt);
     });
 
-    connection.bind("closed", (evt: Event) => {
-      this.emitter.emit("closed", evt);
+    connection.bind(ConnectionManagerEvent.CLOSED, (evt: Event) => {
+      this.emitter.emit(GusherEvent.CLOSED, evt);
     });
 
-    connection.bind("error", (err: Event) => {
+    connection.bind(ConnectionManagerEvent.ERROR, (err: Event) => {
       Logger.log("Error", err);
-      this.emitter.emit("error", err);
+      this.emitter.emit(GusherEvent.ERROR, err);
     });
 
     return connection;
