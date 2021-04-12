@@ -1,11 +1,34 @@
 import { EventEmitter } from "events";
-import Connection from "./connection";
+import { GusherOptions } from "./gusher";
+import { Connection, EmitterEvent as ConnectionEvent } from "./connection";
 import Logger from "./logger";
 
-export default class ConnectionManager implements IConnectionManager {
+export enum State {
+  INIT = 'initialized',
+  CONNECTED = 'connected',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  CONNECTING = 'connecting',
+  DISCONNECTED = 'disconnected'
+}
+
+export enum EmitterEvent {
+  INIT = 'initialized',
+  CONNECTED = 'connected',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  ATCLOSED = '@closed',
+  CONNECTING = 'connecting',
+  DISCONNECTED = 'disconnected',
+  MSG = 'message',
+  RETRYMAX = 'retryMax',
+  RETRY = 'retry'
+}
+
+export class ConnectionManager {
   key: string;
-  options: IGusherOptions;
-  state: string;
+  options: GusherOptions;
+  state: State;
   url: string;
   token: string;
   emitter: EventEmitter;
@@ -18,12 +41,12 @@ export default class ConnectionManager implements IConnectionManager {
   retryTimer: number | null;
   connection: Connection;
 
-  constructor(key: string, options: IGusherOptions) {
+  constructor(key: string, options: GusherOptions) {
     this.key = key;
 
     this.options = options;
 
-    this.state = "initialized";
+    this.state = State.INIT;
 
     this.url = options.url;
 
@@ -52,7 +75,7 @@ export default class ConnectionManager implements IConnectionManager {
 
     this.connection = new Connection({ url: this.url, token: this.token });
 
-    this.connection.bind("open", () => {
+    this.connection.bind(ConnectionEvent.OPEN, () => {
       this.connectionStartTimestamp = Date.now();
 
       if (this.retryTimer) {
@@ -63,18 +86,18 @@ export default class ConnectionManager implements IConnectionManager {
 
       this.skipReconnect = false;
 
-      this.updateState("connected");
+      this.updateState(State.CONNECTED);
     });
 
-    this.connection.bind("message", (message: any) => {
-      this.emitter.emit("message", message);
+    this.connection.bind(ConnectionEvent.MSG, (message: any) => {
+      this.emitter.emit(EmitterEvent.MSG, message);
     });
 
-    this.connection.bind("error", (err: any) => {
-      this.updateState("error", err);
+    this.connection.bind(ConnectionEvent.ERROR, (err: any) => {
+      this.updateState(State.ERROR, err);
     });
 
-    this.connection.bind("closed", (evt: any) => {
+    this.connection.bind(ConnectionEvent.CLOSED, (evt: any) => {
       const sessionTime = Date.now() - this.connectionStartTimestamp;
 
       if (sessionTime > 0 && this.connectionStartTimestamp !== 0) {
@@ -82,11 +105,11 @@ export default class ConnectionManager implements IConnectionManager {
           "@closed",
           Object.assign({}, evt, { session_time: sessionTime })
         );
-        Logger.debug(`Session Time: ${sessionTime} ms`);
+        Logger.log(`Session Time: ${sessionTime} ms`);
         this.connectionStartTimestamp = 0;
       }
 
-      this.updateState("closed", evt);
+      this.updateState(State.CLOSED, evt);
 
       this.retryIn(this.reconnectionDelay);
     });
@@ -95,16 +118,16 @@ export default class ConnectionManager implements IConnectionManager {
   retryIn(delay = 0) {
     if (this.retryNum >= this.retryMax) {
       this.disconnect();
-      this.emitter.emit("retryMax");
-      Logger.debug("Reconnect Max: ", this.retryNum);
+      this.emitter.emit(EmitterEvent.RETRYMAX);
+      Logger.log("Reconnect Max: ", this.retryNum);
     }
 
     if (this.reconnection && !this.skipReconnect) {
       this.retryTimer = window.setTimeout(() => {
         this.retryNum += 1;
-        Logger.debug("Reconnect attempts: ", this.retryNum);
+        Logger.log("Reconnect attempts: ", this.retryNum);
         this.connect();
-        this.emitter.emit("retry", { retry: this.retryNum });
+        this.emitter.emit(EmitterEvent.RETRY, { retry: this.retryNum });
       }, delay);
     }
   }
@@ -128,32 +151,28 @@ export default class ConnectionManager implements IConnectionManager {
   }
 
   connect() {
-    this.updateState("connecting");
+    this.updateState(State.CONNECTING);
 
     this.connection.connect(this.token);
 
-    Logger.debug("Auth", {
-      token: this.token
+    Logger.log("Auth", {
+      token: this.token,
     });
   }
 
   disconnect() {
     this.skipReconnect = true;
     this.connection.close();
-    this.updateState("disconnected");
+    this.updateState(State.DISCONNECTED);
   }
 
-  updateState(newState: string, data?: any) {
+  updateState(newState: State, data?: any) {
     const previousState = this.state;
 
     this.state = newState;
 
     if (previousState !== newState) {
-      Logger.debug("State changed", `'${previousState}' -> '${newState}'`);
-      this.emitter.emit("state_change", {
-        previous: previousState,
-        current: newState
-      });
+      Logger.log("State changed", `'${previousState}' -> '${newState}'`);
 
       this.emitter.emit(newState, data);
     }
@@ -161,9 +180,9 @@ export default class ConnectionManager implements IConnectionManager {
 
   send(event: string, data: any, channel?: string | undefined) {
     if (this.connection) {
-      return this.connection.send(event, data, channel)
+      return this.connection.send(event, data, channel);
     }
 
-    return false
+    return false;
   }
 }

@@ -1,19 +1,47 @@
 import { EventEmitter } from "events";
 import Logger from "./logger";
 
-export default class Connection implements IConnection {
+interface ConnectionOptions {
+  url: string;
+  token: string;
+}
+
+export interface Message {
+  event: string;
+  data: any;
+  channel?: string;
+}
+
+export enum State {
+  INIT = 'initialized',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  CONNECTING = 'connecting',
+  OPEN = 'open'
+}
+
+export enum EmitterEvent {
+  INIT = 'initialized',
+  ERROR = 'error',
+  CLOSED = 'closed',
+  CONNECTING = 'connecting',
+  OPEN = 'open',
+  MSG = 'message'
+}
+
+export class Connection {
+  state: State;
   url = "";
-  state = "initialized";
   token = "";
   emitter: EventEmitter;
   socket: WebSocket | undefined;
 
-  constructor(options: IConnectionOptions) {
+  constructor(options: ConnectionOptions) {
     this.url = options.url;
 
     this.token = options.token;
 
-    this.state = "initialized";
+    this.state = State.INIT;
 
     this.emitter = new EventEmitter();
   }
@@ -23,7 +51,7 @@ export default class Connection implements IConnection {
     return this;
   }
 
-  unbind(event: string, callback?: any): IConnection {
+  unbind(event: string, callback?: any): Connection {
     this.emitter.removeListener(event, callback);
     return this;
   }
@@ -48,9 +76,9 @@ export default class Connection implements IConnection {
 
     this.bindListeners();
 
-    Logger.debug("Connecting", { url: this.url, token: this.token });
+    Logger.log("Connecting", { url: this.url, token: this.token });
 
-    this.changeState("connecting");
+    this.changeState(State.CONNECTING);
 
     return true;
   }
@@ -64,7 +92,7 @@ export default class Connection implements IConnection {
     return false;
   }
 
-  changeState(state: string, params?: any) {
+  changeState(state: State, params?: any) {
     this.state = state;
     this.emitter.emit(state, params);
   }
@@ -99,7 +127,7 @@ export default class Connection implements IConnection {
   }
 
   onOpen(evt: Event) {
-    this.changeState("open");
+    this.changeState(State.OPEN);
 
     if (this.socket) {
       this.socket.onopen = null;
@@ -107,18 +135,18 @@ export default class Connection implements IConnection {
   }
 
   onError(error: Event) {
-    this.emitter.emit("error", error);
+    this.emitter.emit(EmitterEvent.ERROR, error);
   }
 
   onClose(closeEvent: CloseEvent) {
     if (closeEvent) {
-      this.changeState("closed", {
+      this.changeState(State.CLOSED, {
         code: closeEvent.code,
         reason: closeEvent.reason,
-        wasClean: closeEvent.wasClean
+        wasClean: closeEvent.wasClean,
       });
     } else {
-      this.changeState("closed");
+      this.changeState(State.CLOSED);
     }
 
     this.unbindListeners();
@@ -127,30 +155,30 @@ export default class Connection implements IConnection {
   }
 
   onMessage(event: MessageEvent) {
-    let message: IGusherMessage;
+    let message: Message;
 
     try {
       message = JSON.parse(event.data);
     } catch (err) {
-      Logger.error({ error: err });
+      Logger.log({ error: err });
       message = {
         event: "",
-        data: ""
+        data: "",
       };
     }
 
-    Logger.debug("Event recd", message);
-    this.emitter.emit("message", message);
+    Logger.log("Event recd", message);
+    this.emitter.emit(EmitterEvent.MSG, message);
   }
 
   send(event: string, data: any, channel?: string | undefined) {
-    const message: IGusherMessage = { event, data };
+    const message: Message = { event, data };
 
     if (channel) {
       message.channel = channel;
     }
 
-    Logger.debug("Event sent", message);
+    Logger.log("Event sent", message);
 
     if (this.socket) {
       this.socket.send(JSON.stringify(message));

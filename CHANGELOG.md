@@ -1,14 +1,5 @@
 # Changelog
-All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/zh-TW/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-TW/).
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## <sub>[1.0.2] - Dec 30, 2019</sub>
-- Added debug mode
-
-## <sub>[1.0.1] - Dec 30, 2019</sub>
-- Added Logger to replace module `log4js-free`
-
-## <sub>[1.0.0] - Dec 27, 2019</sub>
-- fist commit
+### [1.0.4](https://github.com/swcleo/gusher-js/compare/v1.0.3...v1.0.4) (2021-04-12)

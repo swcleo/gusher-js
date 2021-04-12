@@ -1,12 +1,14 @@
 import { EventEmitter } from "events";
+import { Gusher } from "./gusher";
+import { Action, Event } from "./system";
 
-export default class Channel implements IChannel {
+export class Channel {
   name: string;
-  gusher: IGusher;
+  gusher: Gusher;
   subscribed: boolean;
   emitter: EventEmitter;
 
-  constructor(name: string, gusher: IGusher) {
+  constructor(name: string, gusher: Gusher) {
     this.name = name;
     this.gusher = gusher;
     this.subscribed = false;
@@ -17,24 +19,24 @@ export default class Channel implements IChannel {
     this.gusher.send(event, data, this.name);
   }
 
-  bind(event: string, callback: any): IChannel {
+  bind(event: string, callback: any): Channel {
     this.emitter.on(event, callback);
     return this;
   }
 
-  unbind(event: string, callback: any): IChannel {
+  unbind(event: string, callback: any): Channel {
     this.emitter.removeListener(event, callback);
     return this;
   }
 
   unsubscribe() {
-    this.gusher.send("gusher.unsubscribe", { channel: this.name });
+    this.gusher.send(Action.UNSUBSCRIBE, { channel: this.name });
   }
 
   handleEvent(event: string, data: any) {
     if (
-      event === "gusher.subscribe_succeeded" ||
-      event === "gusher.multi_subscribe_succeeded"
+      event === Event.SUBSCRIBE_SUCCESS ||
+      event === Event.MULTI_SUBSCRIBE_SUCCESS
     ) {
       this.subscribed = true;
     }
@@ -43,7 +45,7 @@ export default class Channel implements IChannel {
   }
 
   subscribe() {
-    this.gusher.send("gusher.subscribe", { channel: this.name });
+    this.gusher.send(Action.SUBSCRIBE, { channel: this.name });
   }
 
   disconnect() {
