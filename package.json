@@ -5,7 +5,7 @@
   "main": "lib/gusher.js",
   "types": "lib/gusher.d.ts",
   "scripts": {
-    "dev": "nodemon --exec ts-node -- server.ts",
+    "dev": "nodemon --exec ts-node -- example/server.ts",
     "build": "npm run build:tsc && npm run build:webpack",
     "build:tsc": "rm -rf ./lib/* && tsc",
     "build:webpack": "webpack"
