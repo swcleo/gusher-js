@@ -3,7 +3,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   mode: "production",
-  entry: "./src/gusher.ts",
+  entry: "./src/index.ts",
   output: {
     filename: "gusher.min.js",
     path: path.resolve(__dirname, "dist"),

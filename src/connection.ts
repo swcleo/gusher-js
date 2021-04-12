@@ -29,7 +29,7 @@ export enum EmitterEvent {
   MSG = 'message'
 }
 
-export default class Connection {
+export class Connection {
   state: State;
   url = "";
   token = "";

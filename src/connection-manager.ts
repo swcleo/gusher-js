@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import { GusherOptions } from "./gusher";
-import Connection, { EmitterEvent as ConnectionEvent } from "./connection";
+import { Connection, EmitterEvent as ConnectionEvent } from "./connection";
 import Logger from "./logger";
 
 export enum State {
@@ -25,7 +25,7 @@ export enum EmitterEvent {
   RETRY = 'retry'
 }
 
-export default class ConnectionManager {
+export class ConnectionManager {
   key: string;
   options: GusherOptions;
   state: State;

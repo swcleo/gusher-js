@@ -1,7 +1,7 @@
-import Gusher from "./gusher";
-import Channel from "./channel";
+import { Gusher } from "./gusher";
+import { Channel } from "./channel";
 
-export default class Channels {
+export class Channels {
   channels: Map<string, Channel>;
 
   constructor() {

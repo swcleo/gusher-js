@@ -1,12 +1,16 @@
 import { EventEmitter } from "events";
 import chunk from "lodash.chunk";
-import Channel from "./channel";
-import Channels from "./channels";
-import ConnectionManager, { EmitterEvent as ConnectionManagerEvent } from "./connection-manager";
+import { Channel } from "./channel";
+import { Channels } from "./channels";
+import {
+  ConnectionManager,
+  EmitterEvent as ConnectionManagerEvent,
+} from "./connection-manager";
 import { Message } from "./connection";
+import { Action } from "./system";
 import Logger from "./logger";
 
-export enum GusherEvent {
+enum GusherEvent {
   ALL = "*",
   CONNECTED = "connected",
   DISCONNECTED = "disconnected",
@@ -25,13 +29,13 @@ export interface GusherOptions {
   retryMax?: number;
 }
 
-export default class Gusher {
+export class Gusher {
+  static Event = GusherEvent;
   key: string;
   options: GusherOptions;
   emitter: EventEmitter;
   channels: Channels;
   connection: ConnectionManager;
-
   constructor(appKey = "", options: GusherOptions) {
     this.key = appKey;
 
@@ -191,7 +195,7 @@ export default class Gusher {
     const multiChannel = channels || this.channels.all();
 
     chunk(multiChannel, 10).forEach((group: string[]) => {
-      this.send("gusher.multi_subscribe", { multi_channel: group });
+      this.send(Action.MULTI_SUBSCRIBE, { multi_channel: group });
     });
   }
 

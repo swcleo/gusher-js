@@ -1,7 +1,8 @@
 import { EventEmitter } from "events";
-import Gusher from "./gusher";
+import { Gusher } from "./gusher";
+import { Action, Event } from "./system";
 
-export default class Channel {
+export class Channel {
   name: string;
   gusher: Gusher;
   subscribed: boolean;
@@ -29,13 +30,13 @@ export default class Channel {
   }
 
   unsubscribe() {
-    this.gusher.send("gusher.unsubscribe", { channel: this.name });
+    this.gusher.send(Action.UNSUBSCRIBE, { channel: this.name });
   }
 
   handleEvent(event: string, data: any) {
     if (
-      event === "gusher.subscribe_succeeded" ||
-      event === "gusher.multi_subscribe_succeeded"
+      event === Event.SUBSCRIBE_SUCCESS ||
+      event === Event.MULTI_SUBSCRIBE_SUCCESS
     ) {
       this.subscribed = true;
     }
@@ -44,7 +45,7 @@ export default class Channel {
   }
 
   subscribe() {
-    this.gusher.send("gusher.subscribe", { channel: this.name });
+    this.gusher.send(Action.SUBSCRIBE, { channel: this.name });
   }
 
   disconnect() {
