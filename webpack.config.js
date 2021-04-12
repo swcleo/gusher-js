@@ -1,13 +1,11 @@
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const merge = require("webpack-merge");
 
-const TARGET = process.env.npm_lifecycle_event;
-
-const baseConfig = {
+module.exports = {
+  mode: "production",
+  entry: "./src/gusher.ts",
   output: {
-    filename: "gusher.js",
+    filename: "gusher.min.js",
     path: path.resolve(__dirname, "dist"),
     library: "Gusher",
     libraryTarget: "umd"
@@ -26,18 +24,3 @@ const baseConfig = {
   },
   plugins: [new CleanWebpackPlugin()]
 };
-
-if (TARGET === "start") {
-  module.exports = merge(baseConfig, {
-    mode: "development",
-    entry: "./client.ts",
-    plugins: [new HtmlWebpackPlugin()]
-  });
-}
-
-if (TARGET === "build") {
-  module.exports = merge(baseConfig, {
-    entry: "./src/gusher.ts",
-    mode: "production"
-  });
-}

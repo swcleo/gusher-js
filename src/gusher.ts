@@ -1,17 +1,27 @@
 import { EventEmitter } from "events";
 import chunk from "lodash.chunk";
+import Channel from "./channel";
 import Channels from "./channels";
 import ConnectionManager from "./connection-manager";
+import { Message } from "./connection";
 import Logger from "./logger";
 
-export default class Gusher implements IGusher {
-  key: string;
-  options: IGusherOptions;
-  emitter: EventEmitter;
-  channels: IChannels;
-  connection: IConnectionManager;
+export interface GusherOptions {
+  url: string;
+  token: string;
+  reconnection?: boolean;
+  reconnectionDelay?: number;
+  retryMax?: number;
+}
 
-  constructor(appKey = "", options: IGusherOptions) {
+export default class Gusher {
+  key: string;
+  options: GusherOptions;
+  emitter: EventEmitter;
+  channels: Channels;
+  connection: ConnectionManager;
+
+  constructor(appKey = "", options: GusherOptions) {
     this.key = appKey;
 
     this.options = options;
@@ -24,9 +34,9 @@ export default class Gusher implements IGusher {
   }
 
   unsubscribe(channelName: string) {
-    const channel = this.channels.remove(channelName)
-    if (channel && this.connection.state === 'connected') {
-      channel.unsubscribe()
+    const channel = this.channels.remove(channelName);
+    if (channel && this.connection.state === "connected") {
+      channel.unsubscribe();
     }
   }
 
@@ -45,7 +55,7 @@ export default class Gusher implements IGusher {
     this.connection = this.createConnection();
   }
 
-  createConnection(): IConnectionManager {
+  createConnection(): ConnectionManager {
     const connection = new ConnectionManager(this.key, this.options);
 
     connection.bind("connected", () => {
@@ -53,7 +63,7 @@ export default class Gusher implements IGusher {
       this.emitter.emit("connected");
     });
 
-    connection.bind("message", (params: IGusherMessage) => {
+    connection.bind("message", (params: Message) => {
       if (!params) {
         return;
       }
@@ -107,14 +117,14 @@ export default class Gusher implements IGusher {
     });
 
     connection.bind("error", (err: Event) => {
-      Logger.error("Error", err);
+      Logger.log("Error", err);
       this.emitter.emit("error", err);
     });
 
     return connection;
   }
 
-  channel(name: string): IChannel | undefined {
+  channel(name: string): Channel | undefined {
     return this.channels.find(name);
   }
 
@@ -130,17 +140,17 @@ export default class Gusher implements IGusher {
     this.connection.disconnect();
   }
 
-  bind(event: string, callback: any): IGusher {
+  bind(event: string, callback: any): Gusher {
     this.emitter.on(event, callback);
     return this;
   }
 
-  unbind(event: string, callback: any): IGusher {
+  unbind(event: string, callback: any): Gusher {
     this.emitter.removeListener(event, callback);
     return this;
   }
 
-  subscribe(channelName: string): IChannel | void {
+  subscribe(channelName: string): Channel {
     const channel = this.channels.add(channelName, this);
     if (this.connection.state === "connected") {
       channel.subscribe();
@@ -149,7 +159,7 @@ export default class Gusher implements IGusher {
   }
 
   subscribes(channels: string[]) {
-    const returnValues: { [key: string]: IChannel } = {};
+    const returnValues: { [key: string]: Channel } = {};
 
     if (!Array.isArray(channels)) {
       return returnValues;

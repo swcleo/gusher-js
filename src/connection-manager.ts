@@ -1,10 +1,11 @@
 import { EventEmitter } from "events";
+import { GusherOptions } from "./gusher";
 import Connection from "./connection";
 import Logger from "./logger";
 
-export default class ConnectionManager implements IConnectionManager {
+export default class ConnectionManager {
   key: string;
-  options: IGusherOptions;
+  options: GusherOptions;
   state: string;
   url: string;
   token: string;
@@ -18,7 +19,7 @@ export default class ConnectionManager implements IConnectionManager {
   retryTimer: number | null;
   connection: Connection;
 
-  constructor(key: string, options: IGusherOptions) {
+  constructor(key: string, options: GusherOptions) {
     this.key = key;
 
     this.options = options;
@@ -82,7 +83,7 @@ export default class ConnectionManager implements IConnectionManager {
           "@closed",
           Object.assign({}, evt, { session_time: sessionTime })
         );
-        Logger.debug(`Session Time: ${sessionTime} ms`);
+        Logger.log(`Session Time: ${sessionTime} ms`);
         this.connectionStartTimestamp = 0;
       }
 
@@ -96,13 +97,13 @@ export default class ConnectionManager implements IConnectionManager {
     if (this.retryNum >= this.retryMax) {
       this.disconnect();
       this.emitter.emit("retryMax");
-      Logger.debug("Reconnect Max: ", this.retryNum);
+      Logger.log("Reconnect Max: ", this.retryNum);
     }
 
     if (this.reconnection && !this.skipReconnect) {
       this.retryTimer = window.setTimeout(() => {
         this.retryNum += 1;
-        Logger.debug("Reconnect attempts: ", this.retryNum);
+        Logger.log("Reconnect attempts: ", this.retryNum);
         this.connect();
         this.emitter.emit("retry", { retry: this.retryNum });
       }, delay);
@@ -132,8 +133,8 @@ export default class ConnectionManager implements IConnectionManager {
 
     this.connection.connect(this.token);
 
-    Logger.debug("Auth", {
-      token: this.token
+    Logger.log("Auth", {
+      token: this.token,
     });
   }
 
@@ -149,10 +150,10 @@ export default class ConnectionManager implements IConnectionManager {
     this.state = newState;
 
     if (previousState !== newState) {
-      Logger.debug("State changed", `'${previousState}' -> '${newState}'`);
+      Logger.log("State changed", `'${previousState}' -> '${newState}'`);
       this.emitter.emit("state_change", {
         previous: previousState,
-        current: newState
+        current: newState,
       });
 
       this.emitter.emit(newState, data);
@@ -161,9 +162,9 @@ export default class ConnectionManager implements IConnectionManager {
 
   send(event: string, data: any, channel?: string | undefined) {
     if (this.connection) {
-      return this.connection.send(event, data, channel)
+      return this.connection.send(event, data, channel);
     }
 
-    return false
+    return false;
   }
 }
