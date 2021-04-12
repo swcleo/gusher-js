@@ -24,7 +24,8 @@
   "author": "leo_chen",
   "license": "MIT",
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "devDependencies": {
     "@types/events": "^3.0.0",
