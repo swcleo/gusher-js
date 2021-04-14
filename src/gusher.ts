@@ -6,7 +6,7 @@ import {
   ConnectionManager,
   EmitterEvent as ConnectionManagerEvent,
 } from "./connection-manager";
-import { Message } from "./connection";
+import { Connection, Message } from "./connection";
 import { Action } from "./system";
 import Logger from "./logger";
 
@@ -203,3 +203,5 @@ export class Gusher {
     this.connection.send(event, data, channel);
   }
 }
+
+export { Channel, Channels, ConnectionManager, Connection, Message }
