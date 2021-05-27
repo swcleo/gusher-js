@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example</title>
+  <script src="../dist/gusher.min.js"></script>
+</head>
+<body>
+
+</body>
+
+<script>
+  const gusher = new Gusher('BB', {
+      url: 'ws://localhost:3000',
+      token: '99fd0534-1a41-4f39-ad14-c29a89acd3bd',
+      binary: true
+    });
+
+    gusher.connect();
+
+    gusher.bind(Gusher.Event.ERROR, (event) => {
+      console.error(`連線失敗: ${event.currentTarget.url}`);
+    });
+
+    gusher.bind(Gusher.Event.CONNECTED, (event) => {
+      console.log('連線成功');
+    });
+
+    gusher.bind(Gusher.Event.CLOSED, (event) => {
+      console.log('連線關閉');
+    });
+
+    gusher.subscribe('clock').bind('tick', (data) => {
+      console.log(data.time);
+    });
+</script>
+</html>

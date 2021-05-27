@@ -1,62 +1,38 @@
-import time from "./time";
-import { SEVERITY } from "./serverity";
+function padLeft(input: string | number, totalWidth: number): string {
+  const str = input.toString();
+  return str.length >= totalWidth ? str : padLeft(`0${str}`, totalWidth);
+}
+
+function time() {
+  let now = new Date();
+
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const hour = padLeft(now.getHours(), 2);
+  const minute = padLeft(now.getMinutes(), 2);
+  const second = padLeft(now.getSeconds(), 2);
+  const millisecond = now.getMilliseconds();
+
+  return `${year}-${month}-${date} ${hour}:${minute}:${second}:${millisecond}`;
+}
 
 function isDebug() {
-  return (
-    localStorage.debug === "*" ||
-    localStorage.debug === "Gusher"
-  );
+  return localStorage.debug === "*" || localStorage.debug === "Gusher";
 }
 
 class Logger {
-  write(serverity: SEVERITY, args: any[]) {
+
+  log(...args: any[]) {
     if (isDebug()) {
       const params = [];
       params.push(
-        `%cGusher %c${SEVERITY[serverity]} %c${time()}`,
+        `%cGusher %c${time()}`,
         "color: red;",
-        "color: green;",
         "color: #347deb;"
       );
-      const output: any = params.concat(args);
-      console.log.apply(console.log, output);
+      console.log(...params.concat(args));
     }
-  }
-
-  log(...args: any[]) {
-    this.write(SEVERITY.DEFAULT, args);
-  }
-
-  debug(...args: any[]) {
-    this.write(SEVERITY.DEBUG, args);
-  }
-
-  info(...args: any[]) {
-    this.write(SEVERITY.INFO, args);
-  }
-
-  notice(...args: any[]) {
-    this.write(SEVERITY.NOTICE, args);
-  }
-
-  warning(...args: any[]) {
-    this.write(SEVERITY.WARNING, args);
-  }
-
-  error(...args: any[]) {
-    this.write(SEVERITY.ERROR, args);
-  }
-
-  crit(...args: any[]) {
-    this.write(SEVERITY.CRITICAL, args);
-  }
-
-  alter(...args: any[]) {
-    this.write(SEVERITY.ALERT, args);
-  }
-
-  emerg(...args: any[]) {
-    this.write(SEVERITY.EMERGENCY, args);
   }
 }
 
