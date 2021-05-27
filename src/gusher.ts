@@ -10,7 +10,7 @@ import { Connection, Message } from "./connection";
 import { Action } from "./system";
 import Logger from "./logger";
 
-enum GusherEvent {
+export enum GusherEvent {
   ALL = "*",
   CONNECTED = "connected",
   DISCONNECTED = "disconnected",
@@ -27,6 +27,7 @@ export interface GusherOptions {
   reconnection?: boolean;
   reconnectionDelay?: number;
   retryMax?: number;
+  binary?: boolean;
 }
 
 export class Gusher {

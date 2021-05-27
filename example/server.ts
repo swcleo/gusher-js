@@ -1,49 +1,66 @@
 import WebSocket from "ws";
+import { str2ab, b2str } from "../src/lib";
 
-const wss = new WebSocket.Server({ port: 3000 });
+const isBinary = true;
 
-interface GusherEvent {
-  event: string;
-  data: any
-}
+declare type ServerHandle = () => void;
 
-enum Actions {
-  MULTI_SUBSCRIBE = 'gusher.multi_subscribe'
-}
+class Server {
+  _instance: null | WebSocket.Server = null;
+  _tick: null | NodeJS.Timeout = null;
 
-enum Events {
-  MULTI_SUBSCRIBE_SUCCESS = 'gusher.multi_subscribe_succeeded'
-}
-
-wss.on("connection", (ws: WebSocket) => {
-  ws.on("message", (message: string) => {
-    // gusher multi subscribe event
-    try {
-      const payload: GusherEvent = JSON.parse(message);
-      if (payload.event === Actions.MULTI_SUBSCRIBE) {
-        const channels: string[] = payload.data.multi_channel;
-        const data = {
-          event: Events.MULTI_SUBSCRIBE_SUCCESS,
+  constructor() {
+    // test: for send message
+    this._tick = setInterval(() => {
+      if (this._instance) {
+        const payload = {
+          channel: "clock",
+          event: "tick",
           data: {
-            channel: channels,
+            time: Math.floor(Date.now() / 1000),
           },
         };
-        ws.send(JSON.stringify(data));
+        const str = JSON.stringify(payload);
+        this._instance.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(isBinary ? str2ab(str) : str);
+          }
+        });
       }
-    } catch (err) {
-      console.error(err);
-    }
-
-    setInterval(() => {
-         // gusher custom event
-      const data = {
-        channel: "clock",
-        event: "tick",
-        data: {
-          time: Math.floor(Date.now() / 1000),
-        },
-      };
-      ws.send(JSON.stringify(data));
     }, 1000);
-  });
+  }
+
+  listen(port: number, callback: ServerHandle) {
+    const wss = new WebSocket.Server({ port });
+
+    wss.on("connection", (ws: WebSocket) => {
+      ws.on("message", (data) => {
+        let message = "";
+
+        if (typeof data === "string") {
+          message = data;
+        }
+
+        // buffer -> arraybuffer -> string
+        if (data instanceof Buffer) {
+          message = b2str(data);
+        }
+
+        const payload = JSON.parse(message);
+
+        // test: for receive message
+        console.log(payload);
+      });
+    });
+
+    this._instance = wss;
+
+    callback();
+  }
+}
+
+const port = 3000
+
+new Server().listen(port, () => {
+  console.log(`Server is running on port: ${port}`);
 });

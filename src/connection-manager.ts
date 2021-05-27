@@ -73,7 +73,7 @@ export class ConnectionManager {
 
     this.retryTimer = null;
 
-    this.connection = new Connection({ url: this.url, token: this.token });
+    this.connection = new Connection({ url: this.url, token: this.token, binary: this.options.binary });
 
     this.connection.bind(ConnectionEvent.OPEN, () => {
       this.connectionStartTimestamp = Date.now();
