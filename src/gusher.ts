@@ -84,29 +84,27 @@ export class Gusher {
         return;
       }
 
+      const payload = { errors: params.errors, data: params.data };
+
       if (params.channel) {
         const channel = this.channels.find(params.channel);
 
         if (channel) {
-          channel.handleEvent(params.event, params.data);
+          channel.handleEvent(params.event, payload);
         }
       }
 
-      if (
-        params.data &&
-        params.data.channel &&
-        Array.isArray(params.data.channel)
-      ) {
+      if (Array.isArray(params?.data?.channel)) {
         params.data.channel.forEach((ch: string) => {
           const channel = this.channels.find(ch);
 
           if (channel) {
-            channel.handleEvent(params.event, params.data);
+            channel.handleEvent(params.event, payload);
           }
         });
       }
 
-      this.emitter.emit(params.event, params.data);
+      this.emitter.emit(params.event, payload);
 
       this.emitter.emit(GusherEvent.ALL, params);
     });
@@ -205,4 +203,4 @@ export class Gusher {
   }
 }
 
-export { Channel, Channels, ConnectionManager, Connection, Message }
+export { Channel, Channels, ConnectionManager, Connection, Message };

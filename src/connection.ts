@@ -11,6 +11,7 @@ interface ConnectionOptions {
 export interface Message {
   event: string;
   data: any;
+  errors?: any[];
   channel?: string;
 }
 
@@ -183,6 +184,7 @@ export class Connection {
       message = {
         event: "",
         data: "",
+        errors: []
       };
     }
 

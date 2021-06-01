@@ -1,7 +1,7 @@
 import WebSocket from "ws";
 import { str2ab, b2str } from "../src/lib";
 
-const isBinary = true;
+const isBinary = false;
 
 declare type ServerHandle = () => void;
 
@@ -19,6 +19,7 @@ class Server {
           data: {
             time: Math.floor(Date.now() / 1000),
           },
+          errors: [ { code: 123456789, msg: "custom error message" } ]
         };
         const str = JSON.stringify(payload);
         this._instance.clients.forEach((client) => {
