@@ -17,7 +17,7 @@ export class Channels {
     return channel;
   }
 
-  all() {
+  all(): string[] {
     const keys: string[] = [];
 
     this.channels.forEach((_: Channel, name: string) => {
@@ -37,7 +37,7 @@ export class Channels {
     return channel;
   }
 
-  disconnect() {
-    this.channels.forEach((channel) => channel.disconnect());
+  disconnect(): void {
+    this.channels.forEach((channel: Channel) => channel.disconnect());
   }
 }
