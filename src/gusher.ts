@@ -49,18 +49,18 @@ export class Gusher {
     this.connection = this.createConnection();
   }
 
-  unsubscribe(channelName: string) {
+  unsubscribe(channelName: string): void {
     const channel = this.channels.remove(channelName);
     if (channel && this.connection.state === "connected") {
       channel.unsubscribe();
     }
   }
 
-  getAuthToken() {
+  getAuthToken(): string {
     return this.options.token || "";
   }
 
-  setAuthToken(token: string) {
+  setAuthToken(token: string): void {
     if (!token) {
       return;
     }
@@ -144,15 +144,15 @@ export class Gusher {
     return this.channels.find(name);
   }
 
-  allChannel() {
+  allChannel(): string[] {
     return this.channels.all();
   }
 
-  connect() {
+  connect(): void {
     this.connection.connect();
   }
 
-  disconnect() {
+  disconnect(): void {
     this.connection.disconnect();
   }
 
@@ -174,7 +174,7 @@ export class Gusher {
     return channel;
   }
 
-  subscribes(channels: string[]) {
+  subscribes(channels: string[]): { [key: string]: Channel } {
     const returnValues: { [key: string]: Channel } = {};
 
     if (!Array.isArray(channels)) {
@@ -192,7 +192,7 @@ export class Gusher {
     return returnValues;
   }
 
-  subscribeAll(channels?: string[]) {
+  subscribeAll(channels?: string[]): void {
     const multiChannel = channels || this.channels.all();
 
     chunk(multiChannel, 10).forEach((group: string[]) => {

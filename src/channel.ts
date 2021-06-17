@@ -15,7 +15,7 @@ export class Channel {
     this.emitter = new EventEmitter();
   }
 
-  trigger(event: string, data: any) {
+  trigger(event: string, data: any): void {
     this.gusher.send(event, data, this.name);
   }
 
@@ -29,11 +29,11 @@ export class Channel {
     return this;
   }
 
-  unsubscribe() {
+  unsubscribe(): void {
     this.gusher.send(Action.UNSUBSCRIBE, { channel: this.name });
   }
 
-  handleEvent(event: string, data: any) {
+  handleEvent(event: string, data: any): void {
     if (
       event === Event.SUBSCRIBE_SUCCESS ||
       event === Event.MULTI_SUBSCRIBE_SUCCESS
@@ -44,11 +44,11 @@ export class Channel {
     this.emitter.emit(event, data);
   }
 
-  subscribe() {
+  subscribe(): void {
     this.gusher.send(Action.SUBSCRIBE, { channel: this.name });
   }
 
-  disconnect() {
+  disconnect(): void {
     this.subscribed = true;
   }
 }
