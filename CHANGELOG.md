@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/swcleo/gusher-js/compare/v1.1.3...v1.1.4) (2021-06-18)
+
+
+### Features
+
+* **type:** 方法回傳資料型別 ([c0f3128](https://github.com/swcleo/gusher-js/commit/c0f3128684b001dbe2cf6250dae738231924fd6a))
+
+
+### Bug Fixes
+
+* add arraybuffer binary type ([56d0c15](https://github.com/swcleo/gusher-js/commit/56d0c1594d053212c70eac9039fd34c88ee54c19))
+
 ### [1.1.3](https://github.com/swcleo/gusher-js/compare/v1.1.2...v1.1.3) (2021-04-14)
 
 
