@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.6](https://github.com/swcleo/gusher-js/compare/v1.1.5...v1.1.6) (2021-06-22)
+
+
+### Bug Fixes
+
+* fix lodash dependency ([d718688](https://github.com/swcleo/gusher-js/commit/d7186880789db3f96db8de691cd60f0d84806f77))
+
 ### [1.1.5](https://github.com/swcleo/gusher-js/compare/v1.1.4...v1.1.5) (2021-06-18)
 
 ### [1.1.4](https://github.com/swcleo/gusher-js/compare/v1.1.3...v1.1.4) (2021-06-18)
