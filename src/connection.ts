@@ -75,7 +75,7 @@ export class Connection {
     try {
       this.socket = new WebSocket(url);
       this.socket.binaryType = "arraybuffer";
-    } catch (e) {
+    } catch (e: any) {
       this.onError(e);
       return false;
     }

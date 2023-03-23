@@ -18,6 +18,9 @@ function time() {
 }
 
 function isDebug() {
+  if (!localStorage) {
+    return false;
+  }
   return localStorage.debug === "*" || localStorage.debug === "Gusher";
 }
 
