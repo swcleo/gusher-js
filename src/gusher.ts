@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import chunk from "lodash.chunk";
-import { Channel } from "./channel";
+import { Channel, IChannel } from "./channel";
 import { Channels } from "./channels";
 import {
   ConnectionManager,
@@ -9,6 +9,8 @@ import {
 import { Connection, Message } from "./connection";
 import { Action } from "./system";
 import Logger from "./logger";
+
+export type Listener = (...args: any[]) => void;
 
 export enum GusherEvent {
   ALL = "*",
@@ -156,17 +158,17 @@ export class Gusher {
     this.connection.disconnect();
   }
 
-  bind(event: string, callback: any): Gusher {
+  bind<T extends string>(event: T, callback: Listener): Gusher {
     this.emitter.on(event, callback);
     return this;
   }
 
-  unbind(event: string, callback: any): Gusher {
+  unbind<T extends string>(event: T, callback: Listener): Gusher {
     this.emitter.removeListener(event, callback);
     return this;
   }
 
-  subscribe(channelName: string): Channel {
+  subscribe(channelName: string): IChannel {
     const channel = this.channels.add(channelName, this);
     if (this.connection.state === "connected") {
       channel.subscribe();

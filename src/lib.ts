@@ -11,7 +11,7 @@ export function str2ab(str: string): ArrayBuffer {
   return buf;
 }
 
-export function b2ab(buf: Buffer): ArrayBuffer {
+export function b2ab(buf: any): ArrayBuffer {
   var ab = new ArrayBuffer(buf.length);
   var view = new Uint8Array(ab);
   for (var i = 0; i < buf.length; ++i) {
@@ -20,6 +20,6 @@ export function b2ab(buf: Buffer): ArrayBuffer {
   return ab;
 }
 
-export function b2str(buf: Buffer): string {
+export function b2str(buf: any): string {
   return ab2str(b2ab(buf));
 }

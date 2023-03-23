@@ -2,7 +2,17 @@ import { EventEmitter } from "events";
 import { Gusher } from "./gusher";
 import { Action, Event } from "./system";
 
-export class Channel {
+export interface IChannel {
+  trigger(event: string, data: any): void;
+  bind<T extends string>(event: T, callback: (...args: any[]) => void): IChannel;
+  unbind<T extends string>(event: T, callback: (...args: any[]) => void): IChannel;
+  subscribe(): void;
+  unsubscribe(): void;
+  handleEvent(event: string, data: any): void;
+  disconnect(): void;
+}
+
+export class Channel implements IChannel {
   name: string;
   gusher: Gusher;
   subscribed: boolean;
@@ -19,12 +29,12 @@ export class Channel {
     this.gusher.send(event, data, this.name);
   }
 
-  bind(event: string, callback: any): Channel {
+  bind<T extends string>(event: T, callback: (...args: any[]) => void): Channel {
     this.emitter.on(event, callback);
     return this;
   }
 
-  unbind(event: string, callback: any): Channel {
+  unbind<T extends string>(event: T, callback: (...args: any[]) => void): Channel {
     this.emitter.removeListener(event, callback);
     return this;
   }

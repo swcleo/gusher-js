@@ -1,18 +1,12 @@
-import WebSocket from "ws";
-import { str2ab, b2str } from "../src/lib";
-
-const isBinary = true;
-
-declare type ServerHandle = () => void;
+import { WebSocketServer, WebSocket } from 'ws';
 
 class Server {
-  _instance: null | WebSocket.Server = null;
-  _tick: null | NodeJS.Timeout = null;
+  instance: WebSocketServer;
+  interval: NodeJS.Timeout;
 
   constructor() {
-    // test: for send message
-    this._tick = setInterval(() => {
-      if (this._instance) {
+    this.interval = setInterval(() => {
+      if (this.instance) {
         const payload = {
           channel: "clock",
           event: "tick",
@@ -21,46 +15,28 @@ class Server {
           },
         };
         const str = JSON.stringify(payload);
-        this._instance.clients.forEach((client) => {
+        this.instance.clients.forEach((client) => {
           if (client.readyState === WebSocket.OPEN) {
-            client.send(isBinary ? str2ab(str) : str);
+            client.send(str);
           }
         });
       }
     }, 1000);
   }
 
-  listen(port: number, callback: ServerHandle) {
-    const wss = new WebSocket.Server({ port });
-
+  listen(port: number) {
+    const wss = new WebSocketServer({ port });
     wss.on("connection", (ws: WebSocket) => {
-      ws.on("message", (data) => {
+      ws.on("message", (data: string) => {
         let message = "";
-
         if (typeof data === "string") {
           message = data;
         }
-
-        // buffer -> arraybuffer -> string
-        if (data instanceof Buffer) {
-          message = b2str(data);
-        }
-
-        const payload = JSON.parse(message);
-
-        // test: for receive message
-        console.log(payload);
+        console.log(message);
       });
     });
-
-    this._instance = wss;
-
-    callback();
+    this.instance = wss;
   }
 }
 
-const port = 3000
-
-new Server().listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
-});
+new Server().listen(3000);

@@ -1,3 +1,4 @@
-import { Gusher } from './Gusher';
+import { Gusher } from "./gusher";
+export { IChannel } from "./channel";
 
-module.exports = Gusher;
+export default Gusher;
