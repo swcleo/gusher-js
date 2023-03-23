@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/swcleo/gusher-js/compare/v1.1.6...v1.2.0) (2023-03-23)
+
+
+### Features
+
+* 使用rollup取代webpack, 讓module以esm為主 ([ac3d634](https://github.com/swcleo/gusher-js/commit/ac3d634b6045c44945a3bb0f1690e4aacf43460f))
+
 ### [1.1.6](https://github.com/swcleo/gusher-js/compare/v1.1.5...v1.1.6) (2021-06-22)
 
 
