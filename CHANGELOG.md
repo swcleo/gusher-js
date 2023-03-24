@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.2](https://github.com/swcleo/gusher-js/compare/v1.2.1...v1.2.2) (2023-03-24)
+
+
+### Bug Fixes
+
+* fix export GusherOptions ([a060ce7](https://github.com/swcleo/gusher-js/commit/a060ce7f6f30daf4c25254c29e8ff531059d8f47))
+
 ### [1.2.1](https://github.com/swcleo/gusher-js/compare/v1.2.0...v1.2.1) (2023-03-24)
 
 
