@@ -1,5 +1,5 @@
 // 使用esm模組或是使用umd模組
-import Gusher from "../..";
+import { Gusher } from "../..";
 
 console.log(Gusher.Event);
 

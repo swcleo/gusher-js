@@ -1,4 +1,2 @@
-import { Gusher } from "./gusher";
-export { IChannel } from "./channel";
-
-export default Gusher;
+export { Gusher } from "./gusher";
+export { Channel, IChannel } from "./channel";
