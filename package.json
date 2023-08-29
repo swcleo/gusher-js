@@ -2,10 +2,15 @@
   "name": "@xpomelox/gusher",
   "version": "1.2.4",
   "description": "gusher.cluster client",
-  "type": "module",
-  "main": "dist/gusher.js",
-  "esm": "dist/gusher.esm.js",
-  "umd": "dist/gusher.umd.js",
+  "main": "dist/gusher.cjs",
+  "module": "dist/gusher.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/gusher.mjs",
+      "require": "./dist/gusher.cjs"
+    },
+    "./server": "./server/index.js"
+  },
   "types": "dist/types/index.d.ts",
   "scripts": {
     "build:types": "npm run clean:dist && tsc -b ./tsconfig.types.json",

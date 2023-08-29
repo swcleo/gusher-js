@@ -20,14 +20,9 @@ const config = {
     },
     {
       name,
-      file: pkg.esm,
+      file: pkg.module,
       format: 'esm'
     },
-    {
-      name,
-      file: pkg.umd,
-      format: 'umd'
-    }
   ],
   plugins: [
     nodePolyfills(),
