@@ -1,9 +1,10 @@
 {
   "name": "@xpomelox/gusher",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "gusher.cluster client",
   "type": "module",
-  "main": "dist/gusher.esm.js",
+  "main": "dist/gusher.js",
+  "esm": "dist/gusher.esm.js",
   "umd": "dist/gusher.umd.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
