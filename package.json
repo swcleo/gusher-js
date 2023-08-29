@@ -1,6 +1,6 @@
 {
   "name": "@xpomelox/gusher",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "gusher.cluster client",
   "main": "dist/gusher.cjs",
   "module": "dist/gusher.mjs",
