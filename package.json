@@ -3,7 +3,8 @@
   "version": "1.2.3",
   "description": "gusher.cluster client",
   "type": "module",
-  "main": "dist/gusher.esm.js",
+  "main": "dist/gusher.js",
+  "esm": "dist/gusher.esm.js",
   "umd": "dist/gusher.umd.js",
   "types": "dist/types/index.d.ts",
   "scripts": {

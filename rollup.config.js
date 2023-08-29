@@ -16,7 +16,12 @@ const config = {
     {
       name,
       file: pkg.main,
-      format: 'es',
+      format: 'cjs',
+    },
+    {
+      name,
+      file: pkg.esm,
+      format: 'esm'
     },
     {
       name,
